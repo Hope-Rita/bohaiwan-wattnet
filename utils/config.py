@@ -16,7 +16,7 @@ def singleton(cls):
 @singleton
 class Config(object):
 
-    def __init__(self, runtime_config_path=None, data_config_path='../data/data.json'):
+    def __init__(self, runtime_config_path=None, data_config_path='data/data.json'):
         """
         初始化全局的运行配置和数据存储配置
         :param runtime_config_path: 存放运行配置的路径

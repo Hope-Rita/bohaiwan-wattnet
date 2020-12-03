@@ -1,43 +1,35 @@
 {
-    "predict-target":"taseometer",
-    "predict-col":"FSS_S07_B3_007",
-    "device":{
+    "predict-target": "minute-debug",
+    "device": {
         "use-gpu": true,
-        "cuda":"cuda:0"
+        "cuda": "cuda:3"
     },
-    "data-parameters":{
-        "pred-len":14,
-        "future-days":14,
-        "env-factor-num":3
+    "data-parameters": {
+        "pred-len": 1440,
+        "future-len": 60,
+        "sensor-num": 4,
+        "move-interval": 10
     },
     "env-factor-load": {
         "low-tp": true,
         "high-tp": true,
         "waterline": true
     },
-    "model-parameters":{
-        "recurrent":{
-            "lstm-hidden-size":55,
-            "rnn-hidden-size":15,
-            "gru-hidden-size":15,
-            "num-workers":0,
-            "batch-size":16,
-            "learning-rate":0.003,
-            "epoch-num":300,
-            "load-model": false,
-            "save-model": true
-        },
-        "mlp":{
-            "hidden-size": [32, 16, 8]
-        }
+    "model-parameters": {
+        "num-workers": 0,
+        "batch-size": 16,
+        "learning-rate": 0.003,
+        "epoch-num": 3,
+        "load-model": false,
+        "save-model": false
     },
-    "predict-result":{
-        "server":"/home/lwt/bohaiwan/union_predict/pred_result",
-        "local":"C:\\WorkSpace\\bohaiwan\\union_predict\\pred_result"
+    "predict-result": {
+        "server": "/home/lwt/bohaiwan-wattnet/union_predict/pred_result",
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\union_predict\\pred_result"
     },
     "model-paras": {
-        "server": "/home/lwt/bohaiwan/union_predict/model_paras",
-        "local": "C:\\WorkSpace\\bohaiwan\\union_predict\\model_paras"
+        "server": "/home/lwt/bohaiwan-wattnet/union_predict/model_paras",
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\union_predict\\model_paras"
     },
     "run-on-local": false
 }

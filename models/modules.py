@@ -49,4 +49,4 @@ class GatedBlock(nn.Module):
         x_tanh, x_sigmoid = self.tanh_conv(x_in), self.sigmoid_conv(x_in)
         x_gate = torch.tanh(x_tanh) * torch.sigmoid(x_sigmoid)
         x_out = self.out_conv(x_gate + x_in[:, :, :x_gate.size(2), :])
-        return x_out
+        return x_out  # (N, w_dim, H-dilation, ebd_dim)
