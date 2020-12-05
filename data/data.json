@@ -2,5 +2,9 @@
     "minute-debug": {
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\data-in-minute-debug.npy",
         "server": "/home/lwt/bohaiwan-wattnet/data/data-in-minute-debug.npy"
+    },
+    "10minute-debug": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\data-in-10minute-debug.npy",
+        "server": "/home/lwt/bohaiwan-wattnet/data/data-in-10minute-debug.npy"
     }
 }

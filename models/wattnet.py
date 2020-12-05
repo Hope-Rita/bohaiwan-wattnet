@@ -3,7 +3,7 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, in_dim, out_dim, w_dim=32, emb_dim=8, dilation_depth=4, dropout_prob=0.2, n_repeat=2):
+    def __init__(self, in_dim, out_dim, w_dim=32, emb_dim=8, dilation_depth=5, dropout_prob=0.2, n_repeat=2):
         """
         Args:
             w_dim: spatial compression dimension carried out by a 2-layer MLP.

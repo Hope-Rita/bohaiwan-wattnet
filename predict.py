@@ -15,6 +15,9 @@ pred_res_dir = None
 if __name__ == '__main__':
     # 存放预测结果文件的路径
     pred_target_filename = conf.predict_target
-    x_train, y_train, x_test, y_test = get_data(pred_target_filename)
+    x_train, y_train, x_test, y_test, normal_y = get_data(pred_target_filename)
     pred = wattnet_predict(x_train, y_train, x_test)
+    pred = data_process.reverse_section_normalization(pred, normal_y)
+    y_test = data_process.reverse_section_normalization(y_test, normal_y)
+    metric.metric_for_each_sensor(y_test, pred)
     print('Process end.')
