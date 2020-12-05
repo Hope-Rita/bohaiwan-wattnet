@@ -127,6 +127,13 @@ def section_normalization_with_normalizer(data):
     return data, normalizers
 
 
+def reverse_section_normalization(data, normalizer):
+    for i in range(data.shape[2]):
+        data[:, :, i] = normalizer[i].inverse_transform(data[:, :, i])
+
+    return data
+
+
 def col_transform(data, normalizers):
     """
     根据 normalizers 对每一列数据进行转换

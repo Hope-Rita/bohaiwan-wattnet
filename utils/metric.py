@@ -28,18 +28,7 @@ def rmse(y, pred):
 
 
 def mape(y, pred):
-    # 过小的数据不计算进去
-    err = 0.0
-    remove_num = 0
-
-    for i in range(len(y)):
-
-        if abs(y[i]) < 0.01:
-            remove_num += 1
-        else:
-            err += abs((y[i] - pred[i]) / y[i])
-
-    return 100 * err / (len(y) - remove_num)
+    return 100 * np.sum(np.abs((y - pred) / y)) / len(y)
 
 
 def pcc(y, pred):
@@ -53,3 +42,8 @@ def all_metric(y, pred):
         'MAPE': mape(y, pred),
         'PCC': pcc(y, pred)
     }
+
+
+def metric_for_each_sensor(y, pred):
+    for i in range(y.shape[2]):
+        print(f'{(i + 1)}:', all_metric(y[:, :, i].reshape(-1), pred[:, :, i].reshape(-1)))
