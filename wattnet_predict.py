@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from utils.config import Config
 from models.wattnet import WATTNet
 from utils.metric import RMSELoss
+from utils.background_loader import BackGroundLoader
 
 
 conf = Config()
@@ -70,7 +71,7 @@ def train_model(model, data_loader):
         if train_loss < min_loss:
             min_loss = train_loss
             min_epoch = epoch
-        print(f'min_loss: {min_loss}, min_epoch: {min_epoch}')
+        print(f'loss: {train_loss}, min_loss: {min_loss}, min_epoch: {min_epoch}')
 
         scheduler.step(loss)  # 更新学习率
 
@@ -91,5 +92,6 @@ def get_dataloader(x_train, y_train, x_test):
 
     # 构建 DataSet 和 DataLoader
     dataset = TensorDataset(x_train, y_train)
-    data_loader = DataLoader(dataset=dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    # data_loader = DataLoader(dataset=dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    data_loader = BackGroundLoader(dataset=dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
     return data_loader, x_test
