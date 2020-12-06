@@ -27,5 +27,5 @@ if __name__ == '__main__':
         save_path = {'dir': conf.get_config('predict-pics', 'local' if conf.run_on_local else 'server'),
                      'filename': time.strftime('%H:%M:%S') + f'_sensor-{i + 1}'
                      }
-        draw_pic.compare(y_test[:, 0, i], pred[:, 0, i], save_path='', title_info=f'sensor-{i + 1}')
+        draw_pic.compare(y_test[:, 0, i], pred[:, 0, i], save_path=save_path, title_info=f'sensor-{i + 1}')
     print('Process end.')

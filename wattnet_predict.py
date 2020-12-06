@@ -4,6 +4,7 @@ import time
 from torch import optim
 from torch.utils.data import TensorDataset
 from sklearn.model_selection import train_test_split
+from visdom import Visdom
 from utils.config import Config
 from models.wattnet import WATTNet
 from utils.metric import RMSELoss
@@ -51,6 +52,9 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     min_epoch = 0
     train_loss_record, val_loss_record = [], []
 
+    # 使用 visdom 进行实时可视化
+    viz = Visdom(env='Train process')
+
     for epoch in range(epoch_num):
 
         now_time = time.strftime('%H:%M:%S')
@@ -87,6 +91,12 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
         val_loss_record.append(val_loss)
         scheduler.step(val_loss)  # 更新学习率
         print(f'train_loss: {train_loss}, valid_loss: {val_loss}, min_loss: {min_loss}, min_epoch: {min_epoch}')
+        viz.line(Y=np.array([train_loss, val_loss]).reshape(1, 2),
+                 X=np.array([epoch, epoch]).reshape(1, 2),
+                 win='line',
+                 update=(None if epoch == 0 else 'append'),
+                 opts={'legend': ['train_loss', 'valid_loss']}
+                 )
 
     # 绘制 loss 变化图
     if draw_loss_pic:
