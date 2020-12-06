@@ -89,3 +89,7 @@ class Config(object):
     @property
     def predict_target(self):
         return self.__predict_target
+
+    @property
+    def run_on_local(self):
+        return self.__run_on_local

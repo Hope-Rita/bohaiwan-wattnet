@@ -51,3 +51,15 @@ def draw_by_label(pic_path, pic_name, **items):
 
     plt.clf()
     plt.close('all')
+
+
+def train_process_pic(train_loss, val_loss, title=None):
+    plt.figure()
+    plt.plot(train_loss, color='green', label='Train loss')
+    plt.plot(val_loss, color='blue', label='Valid loss')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend()
+    if title:
+        plt.title(title)
+    plt.show()
