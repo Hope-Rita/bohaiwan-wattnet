@@ -25,7 +25,7 @@ if __name__ == '__main__':
     # 绘制对比图
     for i in range(pred.shape[2]):
         save_path = {'dir': conf.get_config('predict-pics', 'local' if conf.run_on_local else 'server'),
-                     'filename': time.strftime('%H:%M:%S') + f'_sensor-{i + 1}'
+                     'filename': time.strftime('%Y-%m-%d-%H-%M-%S') + f'_sensor-{i + 1}.png'
                      }
         draw_pic.compare(y_test[:, 0, i], pred[:, 0, i], save_path=save_path, title_info=f'sensor-{i + 1}')
     print('Process end.')

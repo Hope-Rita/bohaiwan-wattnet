@@ -31,7 +31,8 @@ if torch.cuda.is_available() and conf.get_config('device', 'use-gpu'):
 else:
     device = torch.device('cpu')
 # 加载模型和数据的参数
-pred_len, future_len, sensor_num = conf.get_config('data-parameters', inner_keys=['pred-len', 'future-len', 'sensor-num'])
+pred_len, future_len, sensor_num = \
+    conf.get_config('data-parameters', inner_keys=['pred-len', 'future-len', 'sensor-num'])
 # 存放模型参数的路径
 para_save_path = conf.get_config('model-paras', 'local' if conf.get_config('run-on-local') else 'server')
 
@@ -46,14 +47,14 @@ def wattnet_predict(x_train, y_train, x_test):
 
 def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     rmse = RMSELoss()
-    opt = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=0.0003)
+    opt = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=2, threshold=1e-3, min_lr=1e-6)
     min_loss = np.inf
     min_epoch = 0
     train_loss_record, val_loss_record = [], []
 
     # 使用 visdom 进行实时可视化
-    viz = Visdom(env='Train process')
+    viz = Visdom(env='Train process-2')
 
     for epoch in range(epoch_num):
 
@@ -114,6 +115,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
 def get_dataloader(x_train, y_train, x_test):
     # 划分训练集和验证集
     x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.125)
+    print(f'x_train: {x_train.shape}, y_train: {y_train.shape}, x_val: {x_val.shape}, y_val: {y_val.shape}')
     # 转换成 tensor
     x_train = torch.from_numpy(x_train).float().to(device)
     y_train = torch.from_numpy(y_train).float().to(device)

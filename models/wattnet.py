@@ -39,12 +39,13 @@ class WATTNet(nn.Module):
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
         # better performance
-        self.preMLP = MLP(in_dim, w_dim, out_softmax=False)
+        self.pre_mlp = MLP(in_dim, w_dim, out_softmax=False)
 
         # post fully-connected head not always necessary. When sequence length perfectly aligns
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
-        self.postMLP = MLP(w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
+        self.post_mlp = MLP(w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
+        self.output_fc = nn.Linear(20, 6)
 
     def forward(self, x_in):
         """
@@ -55,7 +56,7 @@ class WATTNet(nn.Module):
         Returns:
         """
         # x_in = self.preMLP(x_in.squeeze(1))
-        x_in = self.preMLP(x_in)
+        x_in = self.pre_mlp(x_in)
         x_in = x_in.unsqueeze(1)
 
         if self.emb_dim > 1:
@@ -86,6 +87,7 @@ class WATTNet(nn.Module):
         # `N, 1, H, W` ->  `N, H, W`
         x_out = x_out[:, 0, :, :]
 
-        # x_out = x_out.reshape(x_out.size(0), -1)
-        x_out = self.postMLP(x_out)
+        x_out = self.post_mlp(x_out)  # N, H, sensor_num
+        x_out = self.output_fc(x_out.transpose(1, 2))
+        x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
         return x_out
