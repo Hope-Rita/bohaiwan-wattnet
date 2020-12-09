@@ -47,24 +47,25 @@ def dump_csv(dirname, filename, data, average_func=None):
     print()
 
 
-def dump_pred_result(dirname, filename, y, pred, date):
+def dump_pred_res(dirname, filename, y, pred, sensor_name):
     """
     把预测得到的数据和真实数据写入到 CSV 文件中
     :param dirname: 存放文件的目录
     :param filename: 存放数据的文件名
     :param y: 真实值
     :param pred: 预测值
-    :param date: 日期，这里是所有的日期，要截断
+    :param sensor_name: 传感器名字的列表
     """
 
-    if y is None:
-        df = pd.DataFrame({'value': pred}, index=date)
-    else:
-        df = pd.DataFrame({'truth': y, 'predict': pred}, index=date[-len(y):])
+    data = {}
+    for i in range(y.shape[2]):
+        data[f'truth-{sensor_name[i]}'] = y[:, :, i]
+        data[f'pred-{sensor_name[i]}'] = pred[:, :, i]
+    df = pd.DataFrame(data)
 
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    df.to_csv(os.path.join(dirname, filename), index_label='date')
+    df.to_csv(os.path.join(dirname, filename))
 
 
 def avg(series):

@@ -91,3 +91,7 @@ class WATTNet(nn.Module):
         x_out = self.output_fc(x_out.transpose(1, 2))
         x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
         return x_out
+
+    @property
+    def name(self):
+        return type(self).__name__

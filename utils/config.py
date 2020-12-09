@@ -76,7 +76,7 @@ class Config(object):
         :param data_name: 数据的名字
         :return: 文件的绝对路径
         """
-        return self.__data_config_dict[data_name]['local' if self.__run_on_local else 'server']
+        return self.__data_config_dict[data_name][self.run_location]
 
     @property
     def path(self):
@@ -91,5 +91,5 @@ class Config(object):
         return self.__predict_target
 
     @property
-    def run_on_local(self):
-        return self.__run_on_local
+    def run_location(self):
+        return 'local' if self.__run_on_local else 'server'

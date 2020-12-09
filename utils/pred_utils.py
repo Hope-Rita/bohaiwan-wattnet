@@ -30,7 +30,7 @@ def one_col_cross_validation(data, date, func, k=10, is_draw_pic=True, csv_loc=N
         pred[test_index] = pred_temp
 
     col_metric = metric.all_metric(y, pred)
-    data_process.dump_pred_result(csv_loc['dir'], csv_loc['filename'], y, pred, date)
+    data_process.dump_pred_res(csv_loc['dir'], csv_loc['filename'], y, pred, date)
 
     if is_draw_pic:
         draw_pic.compare(y,

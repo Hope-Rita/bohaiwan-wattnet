@@ -18,15 +18,20 @@
         "epoch-num": 150,
         "visdom-env": "Train Process 2",
         "load-model": false,
-        "save-model": false
+        "save-model": false,
+        "save-name": "1"
     },
     "predict-pics": {
         "server": "/home/lwt/bohaiwan-wattnet/pred_res/pics",
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\pred_res\\pics"
     },
-    "model-paras": {
-        "server": "/home/lwt/bohaiwan-wattnet/union_predict/model_paras",
-        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\union_predict\\model_paras"
+    "predict-res-table": {
+        "server": "/home/lwt/bohaiwan-wattnet/pred_res/tables",
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\pred_res\\tables"
+    },
+    "model-paras-loc": {
+        "server": "/home/lwt/bohaiwan-wattnet/model_paras",
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\model_paras"
     },
     "run-on-local": false
 }

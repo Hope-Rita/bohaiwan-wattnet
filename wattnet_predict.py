@@ -14,7 +14,7 @@ from utils.draw_pic import train_process_pic
 
 conf = Config()
 # 加载模型相关参数
-num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env \
+num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env, save_name \
     = conf.get_config('model-parameters',
                       inner_keys=['num-workers',
                                   'batch-size',
@@ -22,7 +22,8 @@ num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdo
                                   'learning-rate',
                                   'save-model',
                                   'load-model',
-                                  'visdom-env'
+                                  'visdom-env',
+                                  'save-name'
                                   ]
                       )
 
@@ -35,14 +36,27 @@ else:
 pred_len, future_len, sensor_num = \
     conf.get_config('data-parameters', inner_keys=['pred-len', 'future-len', 'sensor-num'])
 # 存放模型参数的路径
-para_save_path = conf.get_config('model-paras', 'local' if conf.get_config('run-on-local') else 'server')
+para_save_path = conf.get_config('model-paras-loc', conf.run_location)
 
 
 def wattnet_predict(x_train, y_train, x_test):
     model = WATTNet(in_dim=sensor_num, out_dim=future_len).to(device)
-    train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_test)
-    model = train_model(model, train_loader, val_loader, draw_loss_pic=True)
+    train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)
+
+    path = os.path.join(para_save_path, f'{model.name}-{save_name}.pkl')
+    if load_model:  # 加载模型
+        model.load_state_dict(torch.load(path))
+        print(f'从{path}处加载模型参数')
+    else:  # 训练模型
+        model = train_model(model, train_loader, val_loader, draw_loss_pic=True)
+
+    # 进行预测
     pred = model(x_test)
+
+    if save_model:  # 保存模型
+        torch.save(model.state_dict(), path)
+        print(f'模型参数已存储到{path}')
+
     return pred.data.to('cpu').numpy()
 
 
@@ -103,12 +117,6 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     # 绘制 loss 变化图
     if draw_loss_pic:
         train_process_pic(train_loss_record, val_loss_record, title='Train Process')
-
-    if save_model:  # 保存模型
-        col = conf.get_config('predict-col')
-        path = f'{para_save_path}/{col}_{model.name()}.pkl'
-        torch.save(model.state_dict(), path)
-        print(f'模型参数已存储到{path}')
 
     return model
 
