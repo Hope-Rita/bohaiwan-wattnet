@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from utils import data_process
 from utils.config import Config
 
@@ -39,5 +40,8 @@ def get_data(filename):
 
     x = data_process.section_normalization(np.array(x))
     y, normal_y = data_process.section_normalization_with_normalizer(np.array(y))
-    train_size = int(0.8 * len(x))
-    return x[:train_size], y[:train_size], x[train_size:], y[train_size:], normal_y
+
+    train_size = int(0.7 * len(x))
+    x_train, y_train = x[:train_size], y[:train_size]
+    x_val, x_test, y_val, y_test = train_test_split(x[train_size:], y[train_size:], test_size=0.66)
+    return x_train, y_train, x_val, y_val, x_test, y_test, normal_y

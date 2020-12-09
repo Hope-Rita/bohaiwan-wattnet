@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import time
+import os
 from torch import optim
 from torch.utils.data import TensorDataset
 from sklearn.model_selection import train_test_split
@@ -39,7 +40,7 @@ pred_len, future_len, sensor_num = \
 para_save_path = conf.get_config('model-paras-loc', conf.run_location)
 
 
-def wattnet_predict(x_train, y_train, x_test):
+def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
     model = WATTNet(in_dim=sensor_num, out_dim=future_len).to(device)
     train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)
 
@@ -121,10 +122,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     return model
 
 
-def get_dataloader(x_train, y_train, x_test):
-    # 划分训练集和验证集
-    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.125)
-    print(f'x_train: {x_train.shape}, y_train: {y_train.shape}, x_val: {x_val.shape}, y_val: {y_val.shape}')
+def get_dataloader(x_train, y_train, x_val, y_val, x_test):
     # 转换成 tensor
     x_train = torch.from_numpy(x_train).float().to(device)
     y_train = torch.from_numpy(y_train).float().to(device)
