@@ -44,6 +44,7 @@ def all_metric(y, pred):
     }
 
 
-def metric_for_each_sensor(y, pred):
+def metric_for_each_sensor(y, pred, sensor_name):
+    print('\n预测指标')
     for i in range(y.shape[2]):
-        print(f'{(i + 1)}:', all_metric(y[:, :, i].reshape(-1), pred[:, :, i].reshape(-1)))
+        print(f'sensor-{sensor_name[i]}:', all_metric(y[:, :, i].reshape(-1), pred[:, :, i].reshape(-1)))

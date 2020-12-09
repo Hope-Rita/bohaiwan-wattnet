@@ -14,14 +14,15 @@ from utils.draw_pic import train_process_pic
 
 conf = Config()
 # 加载模型相关参数
-num_workers, batch_size, epoch_num, learning_rate, save_model, load_model \
+num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env \
     = conf.get_config('model-parameters',
                       inner_keys=['num-workers',
                                   'batch-size',
                                   'epoch-num',
                                   'learning-rate',
                                   'save-model',
-                                  'load-model'
+                                  'load-model',
+                                  'visdom-env'
                                   ]
                       )
 
@@ -54,7 +55,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     train_loss_record, val_loss_record = [], []
 
     # 使用 visdom 进行实时可视化
-    viz = Visdom(env='Train process-2')
+    viz = Visdom(env=visdom_env)
 
     for epoch in range(epoch_num):
 

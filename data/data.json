@@ -6,5 +6,13 @@
     "10minute-debug": {
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\data-in-10minute-debug.npy",
         "server": "/home/lwt/bohaiwan-wattnet/data/data-in-10minute-debug.npy"
+    },
+    "10minutes": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\data-in-10minutes.npy",
+        "server": "/home/lwt/bohaiwan-wattnet/data/data-in-10minutes.npy"
+    },
+    "label": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\label.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/label.csv"
     }
 }

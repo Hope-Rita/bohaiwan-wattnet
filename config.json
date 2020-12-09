@@ -1,20 +1,22 @@
 {
-    "predict-target": "10minute-debug",
+    "predict-target": "10minutes",
     "device": {
         "use-gpu": true,
         "cuda": "cuda:2"
     },
     "data-parameters": {
-        "pred-len": 144,
+        "pred-len": 72,
         "future-len": 6,
-        "sensor-num": 4,
-        "move-interval": 1
+        "sensor-num": 11,
+        "move-interval": 1,
+        "valid-sensors": [4, 6, 7, 8, 10, 11, 30, 31, 35, 36, 37]
     },
     "model-parameters": {
         "num-workers": 0,
         "batch-size": 64,
         "learning-rate": 0.006,
         "epoch-num": 150,
+        "visdom-env": "Train Process 2",
         "load-model": false,
         "save-model": false
     },

@@ -3,7 +3,7 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, in_dim, out_dim, w_dim=32, emb_dim=8, dilation_depth=5, dropout_prob=0.2, n_repeat=2):
+    def __init__(self, in_dim, out_dim, w_dim=32, emb_dim=8, dilation_depth=4, dropout_prob=0.2, n_repeat=2):
         """
         Args:
             w_dim: spatial compression dimension carried out by a 2-layer MLP.
@@ -45,7 +45,7 @@ class WATTNet(nn.Module):
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
         self.post_mlp = MLP(w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
-        self.output_fc = nn.Linear(20, 6)
+        self.output_fc = nn.Linear(12, out_dim)
 
     def forward(self, x_in):
         """
