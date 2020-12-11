@@ -59,8 +59,8 @@ def dump_pred_res(dirname, filename, y, pred, sensor_name):
 
     data = {}
     for i in range(y.shape[2]):
-        data[f'truth-{sensor_name[i]}'] = y[:, :, i]
-        data[f'pred-{sensor_name[i]}'] = pred[:, :, i]
+        data[f'truth-{sensor_name[i]}'] = y[:, 0, i]
+        data[f'pred-{sensor_name[i]}'] = pred[:, 0, i]
     df = pd.DataFrame(data)
 
     if not os.path.exists(dirname):

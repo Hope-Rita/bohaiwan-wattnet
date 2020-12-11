@@ -44,4 +44,6 @@ def get_data(filename):
     train_size = int(0.7 * len(x))
     x_train, y_train = x[:train_size], y[:train_size]
     x_val, x_test, y_val, y_test = train_test_split(x[train_size:], y[train_size:], test_size=0.66)
+    print(f'数据集规模: x_train: {x_train.shape}, y_train: {y_train.shape}, x_val: {x_val.shape}, y_val: {y_val.shape}',
+          f'x_test: {x_test.shape}, y_test: {y_test.shape}')
     return x_train, y_train, x_val, y_val, x_test, y_test, normal_y

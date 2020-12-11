@@ -3,7 +3,7 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, in_dim, out_dim, w_dim=32, emb_dim=8, dilation_depth=4, dropout_prob=0.2, n_repeat=2):
+    def __init__(self, series_len, in_dim, out_dim, w_dim=32, emb_dim=8, depth=4, dropout_prob=0.2, n_repeat=2):
         """
         Args:
             w_dim: spatial compression dimension carried out by a 2-layer MLP.
@@ -12,7 +12,7 @@ class WATTNet(nn.Module):
                      Higher embedding dimension increases accuracy of the spatial attention module at the cost
                      of increased memory requirement. BEWARE: w_dim * emb_dim > 1e4 can get *VERY* costly in terms
                      of GPU memory, especially with big batches.
-            dilation_depth: number of temporal-spatial blocks. Dilation for temporal dilated convolution is doubled
+            depth: number of temporal-spatial blocks. Dilation for temporal dilated convolution is doubled
                             each time.
             n_repeat: number of repeats of #`dilation_depth` of temporal-spatial layers. Useful to increase model depth
                       with short sequences without running into situations where the dilated kernel becomes wider than the
@@ -21,9 +21,9 @@ class WATTNet(nn.Module):
         super().__init__()
         self.w_dim = w_dim
         self.emb_dim = emb_dim
-        self.dilation_depth = dilation_depth
-        self.n_layers = dilation_depth * n_repeat
-        self.dilations = [2 ** i for i in range(1, dilation_depth + 1)] * n_repeat
+        self.dilation_depth = depth
+        self.n_layers = depth * n_repeat
+        self.dilations = [2 ** i for i in range(1, depth + 1)] * n_repeat
 
         ltransf_dim = w_dim * emb_dim
         self.attblocks = nn.ModuleList([AttentionBlock(in_channels=w_dim,
@@ -45,7 +45,7 @@ class WATTNet(nn.Module):
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
         self.post_mlp = MLP(w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
-        self.output_fc = nn.Linear(12, out_dim)
+        self.output_fc = nn.Linear(series_len - sum(self.dilations), out_dim)
 
     def forward(self, x_in):
         """

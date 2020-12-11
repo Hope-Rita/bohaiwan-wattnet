@@ -36,11 +36,16 @@ def pcc(y, pred):
 
 
 def all_metric(y, pred):
+    rmse_val = rmse(y, pred)
+    mae_val = mae(y, pred)
+    mape_val = mape(y, pred)
+    pcc_val = pcc(y, pred)
+
     return {
-        'RMSE': rmse(y, pred),
-        'MAE': mae(y, pred),
-        'MAPE': mape(y, pred),
-        'PCC': pcc(y, pred)
+        'RMSE': f'{round(rmse_val * 1e6, 4)}e-06',
+        'MAE': f'{round(mae_val * 1e6, 4)}e-06',
+        'MAPE': round(mape_val, 4),
+        'PCC': round(pcc_val, 4)
     }
 
 
