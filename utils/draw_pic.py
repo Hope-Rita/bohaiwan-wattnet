@@ -21,7 +21,7 @@ def all_predict(y_dict):
 
 def compare(y, pred, save_path, title_info=None):
     plt.figure(figsize=(15, 8))
-    plt.plot(pred, color='green', label='predict')
+    plt.plot(pred, color='red', label='predict')
     plt.plot(y, label='truth')
 
     if title_info:
