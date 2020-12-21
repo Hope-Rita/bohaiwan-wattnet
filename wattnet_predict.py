@@ -46,13 +46,15 @@ def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
                     in_dim=sensor_num,
                     out_dim=future_len,
                     depth=depth,
-                    n_repeat=n_repeat
+                    n_repeat=n_repeat,
+                    show_attn_alpha=False
                     ).to(device)
+    print(f'载入模型:{model.name}, depth: {depth}, n_repeat: {n_repeat}')
     train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)
 
     path = os.path.join(para_save_path, f'{model.name}-{save_name}.pkl')
     if load_model:  # 加载模型
-        model.load_state_dict(torch.load(path))
+        model.load_state_dict(torch.load(path, map_location=conf.get_config('device', 'cuda')))
         print(f'从{path}处加载模型参数')
     else:  # 训练模型
         model = train_model(model, train_loader, val_loader, draw_loss_pic=True)
@@ -115,7 +117,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
 
     # 绘制 loss 变化图
     if draw_loss_pic:
-        train_process_pic(train_loss_record, val_loss_record, title='Train Process')
+        train_process_pic(train_loss_record, val_loss_record, title=f'Train Process {save_name}')
     return model
 
 

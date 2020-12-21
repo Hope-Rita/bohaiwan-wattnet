@@ -5,25 +5,25 @@
         "cuda": "cuda:2"
     },
     "data-parameters": {
-        "pred-len": 48,
+        "pred-len": 30,
         "future-len": 6,
         "sensor-num": 11,
         "move-interval": 1,
         "valid-sensors": [4, 6, 7, 8, 10, 11, 30, 31, 35, 36, 37]
     },
     "model-hyper-para": {
-        "depth": 3,
-        "n-repeat": 3
+        "depth": 2,
+        "n-repeat": 4
     },
     "model-config": {
         "num-workers": 0,
         "batch-size": 64,
         "learning-rate": 0.006,
         "epoch-num": 150,
-        "visdom-env": "Train Process 3",
+        "visdom-env": "Train Process 4",
         "load-model": false,
         "save-model": true,
-        "save-name": "p48d3r3"
+        "save-name": "p30d2r4"
     },
     "predict-pics": {
         "server": "/home/lwt/bohaiwan-wattnet/pred_res/pics",

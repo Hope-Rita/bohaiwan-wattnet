@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import os
 
@@ -32,7 +33,6 @@ def compare(y, pred, save_path, title_info=None):
     if not os.path.exists(save_path['dir']):
         os.makedirs(save_path['dir'])
     plt.savefig(os.path.join(save_path['dir'], save_path['filename']))
-
     plt.clf()
     plt.close('all')
 
@@ -62,4 +62,18 @@ def train_process_pic(train_loss, val_loss, title=None):
     plt.legend()
     if title:
         plt.title(title)
+    plt.show()
+
+
+def show_attention_matrix(alpha, layer):
+    """
+    draw a heatmap using `alpha` matrix -- similarity matrix in self-attention modules
+    :param alpha: shape (channel, channel)
+    :param layer: layer-th layer in the model
+    """
+    channel_num = len(alpha)
+
+    sns.set()
+    heat_map = sns.heatmap(alpha,  cmap='YlGnBu')
+    plt.title(f'layer-{layer}')
     plt.show()

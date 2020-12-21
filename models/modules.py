@@ -1,7 +1,8 @@
 import math
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as functional
+from utils.draw_pic import show_attention_matrix
 
 
 class AttentionBlock(nn.Module):
@@ -13,7 +14,11 @@ class AttentionBlock(nn.Module):
         self.linear_values = nn.Linear(value_size, value_size)
         self.sqrt_key_size = math.sqrt(key_size)
 
-    def forward(self, x_in, alpha_check: str = False):
+    def forward(self, x_in, show_alpha=None):
+        """
+        :param x_in: (N, W, C)
+        :param show_alpha: 若为 None, 则表示不输出 alpha, 否则表示输出的层数
+        """
         bs = x_in.size(0)
         w_dim = x_in.size(1)
         x_orig = x_in
@@ -29,10 +34,14 @@ class AttentionBlock(nn.Module):
         values = values.reshape((bs, w_dim, -1))  # `N, W, value_size`
 
         alphas = torch.bmm(query, torch.transpose(keys, 1, 2))  # `N, W, W`
-        alphas = F.softmax(alphas / self.sqrt_key_size, dim=1)  # `N, W, W`
+        alphas = functional.softmax(alphas / self.sqrt_key_size, dim=1)  # `N, W, W`
         res = torch.bmm(alphas, values)  # `N, W, value_size`
         res = torch.sigmoid(res)
-        if alpha_check: return alphas
+
+        if show_alpha:
+            alphas_to_show = alphas.cpu().detach().numpy().mean(axis=0)
+            show_attention_matrix(alphas_to_show, show_alpha)
+
         return res + x_orig
 
 

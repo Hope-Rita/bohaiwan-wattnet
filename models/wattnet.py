@@ -3,7 +3,8 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=32, emb_dim=8, depth=4, dropout_prob=0.2, n_repeat=2):
+    def __init__(self, series_len, in_dim, out_dim, w_dim=32, emb_dim=8, depth=4, dropout_prob=0.2, n_repeat=2,
+                 show_attn_alpha=False):
         """
         Args:
             w_dim: spatial compression dimension carried out by a 2-layer MLP.
@@ -15,21 +16,23 @@ class WATTNet(nn.Module):
             depth: number of temporal-spatial blocks. Dilation for temporal dilated convolution is doubled
                             each time.
             n_repeat: number of repeats of #`dilation_depth` of temporal-spatial layers. Useful to increase model depth
-                      with short sequences without running into situations where the dilated kernel becomes wider than the
-                      sequence itself.
+                      with short sequences without running into situations where the dilated kernel becomes wider than
+                      the sequence itself.
+            show_attn_alpha: whether to show the matrix `alpha` in the self-attention module
         """
         super().__init__()
         self.w_dim = w_dim
         self.emb_dim = emb_dim
         self.dilation_depth = depth
         self.n_layers = depth * n_repeat
+        self.show_attention_alpha = show_attn_alpha
         self.dilations = [2 ** i for i in range(1, depth + 1)] * n_repeat
 
         ltransf_dim = w_dim * emb_dim
-        self.attblocks = nn.ModuleList([AttentionBlock(in_channels=w_dim,
-                                                       key_size=ltransf_dim,
-                                                       value_size=ltransf_dim)
-                                        for _ in self.dilations])
+        self.attention_blocks = nn.ModuleList([AttentionBlock(in_channels=w_dim,
+                                                              key_size=ltransf_dim,
+                                                              value_size=ltransf_dim)
+                                               for _ in self.dilations])
 
         self.resblocks = nn.ModuleList([GatedBlock(dilation=d, w_dim=w_dim)
                                         for d in self.dilations])
@@ -70,15 +73,22 @@ class WATTNet(nn.Module):
         for i in range(len(self.resblocks)):
             x_in = self.resblocks[i](x_in)
             x_att_list = []
+
             # slicing across `H`, temporal dimension
-            for k in range(x_in.size(2)):
+            temporal_len = x_in.size(2)
+            for k in range(temporal_len):
                 # `C` embedding message passing using self-att
-                x_att = self.attblocks[i](x_in[:, :, k, :])
+                if k == temporal_len - 1 and self.show_attention_alpha:
+                    x_att = self.attention_blocks[i](x_in[:, :, k, :], str(i + 1))
+                else:
+                    x_att = self.attention_blocks[i](x_in[:, :, k, :])
                 # `N, W, C` -> `N, W, 1, C`
                 x_att = x_att.unsqueeze(2)
                 x_att_list.append(x_att)
-                # `N, W, 1, C` -> `N, W, H, C`
+
+            # `N, W, 1, C` -> `N, W, H, C`
             x_in = torch.cat(x_att_list, dim=2)
+
         # `N, W, H, C` ->  `N, W, H, 1`
         if self.emb_dim > 1:
             x_in = self.dec_conv(x_in)

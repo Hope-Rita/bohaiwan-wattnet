@@ -23,8 +23,10 @@ if __name__ == '__main__':
     # 输出预测指标
     metric.metric_for_each_sensor(y_test, pred, sensor_name)
     # 存储预测结果
+    now_time = time.strftime('%Y-%m-%d-%H-%M-%S')
+    model_type = conf.get_config('model-config', 'save-name')
     data_process.dump_pred_res(dirname=conf.get_config('predict-res-table', conf.run_location),
-                               filename=time.strftime('%Y-%m-%d-%H-%M-%S') + '.csv',
+                               filename=now_time + '_' + model_type + '.csv',
                                y=y_test,
                                pred=pred,
                                sensor_name=sensor_name
@@ -33,7 +35,7 @@ if __name__ == '__main__':
     # 绘制对比图
     for i in range(pred.shape[2]):
         save_path = {'dir': conf.get_config('predict-pics', conf.run_location),
-                     'filename': time.strftime('%Y-%m-%d-%H-%M-%S') + f'_sensor-{sensor_name[i]}.png'
+                     'filename': f'{now_time}_{model_type}_sensor-{sensor_name[i]}.png'
                      }
         draw_pic.compare(y_test[:, 0, i], pred[:, 0, i], save_path=save_path, title_info=f'sensor-{sensor_name[i]}')
     print('Process end.')
