@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import os
+from utils.config import Config
+
+
+conf = Config()
 
 
 def all_predict(y_dict):
@@ -71,9 +75,14 @@ def show_attention_matrix(alpha, layer):
     :param alpha: shape (channel, channel)
     :param layer: layer-th layer in the model
     """
-    channel_num = len(alpha)
+    sensors = conf.get_config('data-parameters', 'valid-sensors')
+    channel_num = len(sensors)
 
     sns.set()
     heat_map = sns.heatmap(alpha,  cmap='YlGnBu')
     plt.title(f'layer-{layer}')
+    plt.xlabel('sensor')
+    plt.ylabel('sensor')
+    plt.xticks(range(1, channel_num + 1), sensors)
+    plt.yticks(range(channel_num), sensors, rotation=360)
     plt.show()

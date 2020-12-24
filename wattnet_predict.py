@@ -14,7 +14,7 @@ from utils.draw_pic import train_process_pic
 
 conf = Config()
 # 加载模型训练的相关配置
-num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env, save_name \
+num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env, save_name, show_attn \
     = conf.get_config('model-config',
                       inner_keys=['num-workers',
                                   'batch-size',
@@ -23,7 +23,8 @@ num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdo
                                   'save-model',
                                   'load-model',
                                   'visdom-env',
-                                  'save-name'
+                                  'save-name',
+                                  'show-attn'
                                   ]
                       )
 # 加载模型超参
@@ -47,7 +48,7 @@ def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
                     out_dim=future_len,
                     depth=depth,
                     n_repeat=n_repeat,
-                    show_attn_alpha=False
+                    show_attn_alpha=show_attn
                     ).to(device)
     print(f'载入模型:{model.name}, depth: {depth}, n_repeat: {n_repeat}')
     train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)

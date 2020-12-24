@@ -21,46 +21,46 @@ class WATTNet(nn.Module):
             show_attn_alpha: whether to show the matrix `alpha` in the self-attention module
         """
         super().__init__()
-        self.w_dim = w_dim
+        # self.w_dim = w_dim
+        self.w_dim = in_dim
         self.emb_dim = emb_dim
         self.dilation_depth = depth
         self.n_layers = depth * n_repeat
         self.show_attention_alpha = show_attn_alpha
         self.dilations = [2 ** i for i in range(1, depth + 1)] * n_repeat
 
-        ltransf_dim = w_dim * emb_dim
-        self.attention_blocks = nn.ModuleList([AttentionBlock(in_channels=w_dim,
+        ltransf_dim = self.w_dim * emb_dim
+        self.attention_blocks = nn.ModuleList([AttentionBlock(in_channels=self.w_dim,
                                                               key_size=ltransf_dim,
                                                               value_size=ltransf_dim)
                                                for _ in self.dilations])
 
-        self.resblocks = nn.ModuleList([GatedBlock(dilation=d, w_dim=w_dim)
+        self.resblocks = nn.ModuleList([GatedBlock(dilation=d, w_dim=self.w_dim)
                                         for d in self.dilations])
 
         self.emb_conv = nn.Conv2d(1, emb_dim, kernel_size=1)
-        self.dec_conv = nn.Conv2d(w_dim, w_dim, kernel_size=(1, emb_dim), groups=w_dim)
+        self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim), groups=self.w_dim)
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
         # better performance
-        self.pre_mlp = MLP(in_dim, w_dim, out_softmax=False)
+        self.pre_mlp = MLP(in_dim, self.w_dim, out_softmax=False)
 
         # post fully-connected head not always necessary. When sequence length perfectly aligns
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
-        self.post_mlp = MLP(w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
+        self.post_mlp = MLP(self.w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
         self.output_fc = nn.Linear(series_len - sum(self.dilations), out_dim)
 
     def forward(self, x_in):
         """
         Args:
-            x_in: 'N, C, H, W' where `N` is the batch dimension, `C` the one-hot
+            x_in: 'N, H, W' where `N` is the batch dimension, `C` the one-hot
                   embedding dimension, `H` is the temporal dimension, `W` is the
                   second dimension of the timeseries (e.g timeseries for different FX pairs)
         Returns:
         """
-        # x_in = self.preMLP(x_in.squeeze(1))
-        x_in = self.pre_mlp(x_in)
-        x_in = x_in.unsqueeze(1)
+        # x_in = self.pre_mlp(x_in)
+        x_in = x_in.unsqueeze(1)  # `N, H, W` -> `N, C, H, W`
 
         if self.emb_dim > 1:
             x_in = self.emb_conv(x_in)
@@ -97,7 +97,7 @@ class WATTNet(nn.Module):
         # `N, 1, H, W` ->  `N, H, W`
         x_out = x_out[:, 0, :, :]
 
-        x_out = self.post_mlp(x_out)  # N, H, sensor_num
+        # x_out = self.post_mlp(x_out)  # N, H, sensor_num
         x_out = self.output_fc(x_out.transpose(1, 2))
         x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
         return x_out
