@@ -2,7 +2,7 @@
     "predict-target": "10minutes",
     "device": {
         "use-gpu": true,
-        "cuda": "cuda:1"
+        "cuda": "cuda:2"
     },
     "data-parameters": {
         "pred-len": 36,
@@ -14,6 +14,22 @@
     "model-hyper-para": {
         "depth": 4,
         "n-repeat": 1
+    },
+    "mlp-hyper-para": {
+        "hidden": [72, 36, 18]
+    },
+    "recurrent-hyper-para": {
+        "pred-len": 36,
+        "env-factor-num": 0,
+        "lstm-hidden-size":55,
+        "rnn-hidden-size":15,
+        "gru-hidden-size":15,
+        "num-workers":0,
+        "batch-size":64,
+        "learning-rate":0.003,
+        "epoch-num":100,
+        "load-model": false,
+        "save-model": false
     },
     "model-config": {
         "num-workers": 0,

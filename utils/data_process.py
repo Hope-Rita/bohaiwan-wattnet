@@ -135,14 +135,14 @@ def reverse_section_normalization(data, normalizer):
     return data
 
 
-def col_transform(data, normalizers):
+def reverse_col_transform(data, normalizers):
     """
-    根据 normalizers 对每一列数据进行转换
+    根据 normalizers 对每一列数据进行逆转换
     :param data: 类型为 numpy 数组
     :param normalizers: 转换器
     :return: 转换好的数据
     """
     for i in range(data.shape[1]):
-        data[:, i] = normalizers[i].transform(data[:, i])
+        data[:, i] = normalizers[i].inverse_transform(data[:, i])
 
     return data
