@@ -52,7 +52,7 @@
         "num-workers": 0,
         "batch-size": 64,
         "learning-rate": 0.003,
-        "epoch-num": 100,
+        "epoch-num": 50,
         "load-model": false,
         "save-model": false
     },
@@ -60,7 +60,7 @@
         "num-workers": 0,
         "batch-size": 64,
         "learning-rate": 0.006,
-        "epoch-num": 100,
+        "epoch-num": 50,
         "visdom-env": "Train Process 1",
         "load-model": false,
         "save-model": true,
