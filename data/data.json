@@ -31,6 +31,14 @@
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data5.csv",
         "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data5.csv"
     },
+    "bohaiwan2020-6": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data6.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data6.csv"
+    },
+    "bohaiwan2020-7": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data7.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data7.csv"
+    },
     "label": {
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\label.csv",
         "server": "/home/lwt/bohaiwan-wattnet/data/label.csv"

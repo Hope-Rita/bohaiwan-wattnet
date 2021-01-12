@@ -77,12 +77,13 @@ def show_attention_matrix(alpha, layer):
     """
     sensors = conf.get_config('data-parameters', 'valid-sensors')
     channel_num = len(sensors)
+    plt.figure(figsize=(10, 10))
 
     sns.set()
-    heat_map = sns.heatmap(alpha,  cmap='YlGnBu')
+    heat_map = sns.heatmap(alpha,  cmap='YlGnBu', linewidths=0.5)
     plt.title(f'layer-{layer}')
     plt.xlabel('sensor')
     plt.ylabel('sensor')
-    plt.xticks(range(1, channel_num + 1), sensors)
+    plt.xticks(range(1, channel_num + 1), sensors, rotation=90)
     plt.yticks(range(channel_num), sensors, rotation=360)
     plt.show()

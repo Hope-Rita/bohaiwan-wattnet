@@ -75,7 +75,8 @@ def avg(series):
     :return: 把空值去掉之后的平均值
     """
     series = series.dropna()
-    return sum(series) / len(series)
+    avg_val = sum([float(i) for i in series]) / len(series)
+    return round(avg_val, 4)
 
 
 def col_normalization(data):

@@ -6,6 +6,7 @@ conf = Config(config_path)
 from dataset import get_data
 from utils import data_process
 from utils import metric
+from baseline.lr import lr_predict
 from baseline.svr import svr_predict
 from baseline.mlp import mlp_predict
 from baseline.ha import ha_predict
@@ -15,9 +16,9 @@ from baseline.recurrent import rnn_union_predict, lstm_union_predict, gru_union_
 if __name__ == '__main__':
     pred_target_filename = conf.predict_target
     sensor_name = conf.get_config('data-parameters', 'valid-sensors')
-    pred_func = lstm_union_predict
+    pred_func = lr_predict
 
-    x_train, y_train, x_test, y_test, normal_y = get_data(pred_target_filename, valid_set=False)
+    x_train, y_train, x_test, y_test, normal_y = get_data(pred_target_filename, 'nanjing', valid_set=False)
     y_train = y_train[:, -1, :]
     y_test = y_test[:, -1, :]
     y_test = data_process.reverse_col_transform(y_test, normal_y)

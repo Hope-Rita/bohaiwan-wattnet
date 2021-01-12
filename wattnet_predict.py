@@ -9,7 +9,7 @@ from visdom import Visdom
 from utils.config import Config
 from models.wattnet import WATTNet
 from utils.metric import RMSELoss
-from utils.background_loader import BackGroundLoader
+from utils.background_loader import BackgroundLoader
 from utils.draw_pic import train_process_pic
 
 
@@ -77,7 +77,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=2, threshold=1e-3, min_lr=1e-6)
     min_loss, min_epoch = np.inf, 0
     min_val_loss = np.inf
-    best_model = None
+    # best_model = None
     train_loss_record, val_loss_record = [], []
     viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
 
@@ -110,7 +110,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
                 val_loss += rmse(model(x), y).item() * len(x)
         val_loss /= len(val_loader.dataset)
         val_loss_record.append(val_loss)
-        if val_loss < min_val_loss:
+        if epoch >= 10 and val_loss < min_val_loss:
             min_val_loss = val_loss
             best_model = copy.deepcopy(model)
         scheduler.step(val_loss)  # 更新学习率
@@ -125,7 +125,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     # 绘制 loss 变化图
     if draw_loss_pic:
         train_process_pic(train_loss_record, val_loss_record, title=f'Train Process {save_name}')
-    return best_model
+    return model
 
 
 def get_dataloader(x_train, y_train, x_val, y_val, x_test):
@@ -138,7 +138,7 @@ def get_dataloader(x_train, y_train, x_val, y_val, x_test):
 
     # 构建 DataSet 和 DataLoader
     train_dataset = TensorDataset(x_train, y_train)
-    train_loader = BackGroundLoader(dataset=train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    train_loader = BackgroundLoader(dataset=train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
     val_dataset = TensorDataset(x_val, y_val)
-    val_loader = BackGroundLoader(dataset=val_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    val_loader = BackgroundLoader(dataset=val_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
     return train_loader, val_loader, x_test

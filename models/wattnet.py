@@ -3,7 +3,7 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=32, emb_dim=8, depth=4, dropout_prob=0.2, n_repeat=2,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=8, depth=4, dropout_prob=0.2, n_repeat=2,
                  show_attn_alpha=False):
         """
         Args:
