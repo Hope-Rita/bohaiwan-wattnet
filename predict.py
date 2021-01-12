@@ -20,10 +20,12 @@ if __name__ == '__main__':
     y_test = data_process.reverse_section_normalization(y_test, normal_y)
 
     # 输出预测指标
-    metric.metric_for_each_sensor(y_test, pred, sensor_name)
+    metrics = metric.metric_for_each_sensor(y_test, pred, sensor_name)
     # 存储预测结果
     now_time = time.strftime('%Y-%m-%d-%H-%M-%S')
     model_type = conf.get_config('model-config', 'save-name')
+    data_process.dump_csv(dirname='pred_res/metrics', filename=now_time + '_' + model_type + '.csv', data=metrics,
+                          average_func=data_process.avg)
     data_process.dump_pred_res(dirname=conf.get_config('predict-res-table', conf.run_location),
                                filename=now_time + '_' + model_type + '.csv',
                                y=y_test,

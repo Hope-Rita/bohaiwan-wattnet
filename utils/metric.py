@@ -51,5 +51,9 @@ def all_metric(y, pred):
 
 def metric_for_each_sensor(y, pred, sensor_name):
     print('\n预测指标')
+    sensors_metric = []
     for i in range(y.shape[-1]):
-        print(f'sensor-{sensor_name[i]}:', all_metric(y[:, :, i].reshape(-1), pred[:, :, i].reshape(-1)))
+        m = all_metric(y[:, 5, i].reshape(-1), pred[:, 5, i].reshape(-1))
+        sensors_metric.append(m)
+        print(f'sensor-{sensor_name[i]}:', m)
+    return sensors_metric

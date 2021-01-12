@@ -1,14 +1,14 @@
 {
-    "predict-target": "bohaiwan2020-5",
+    "predict-target": "bohaiwan2020-2",
     "device": {
         "use-gpu": true,
-        "cuda": "cuda:2"
+        "cuda": "cuda:0"
     },
     "data-parameters": {
-        "pred-len": 36,
+        "pred-len": 24,
         "future-gap": 0,
         "future-len": 6,
-        "sensor-num": 19,
+        "sensor-num": 36,
         "move-interval": 1,
         "valid-sensors": [
             "FSS_S01_B1_003",
@@ -16,37 +16,50 @@
             "FSS_S01_B2_005",
             "FSS_S01_B2_006",
             "FSS_S01_B3_007",
+            "FSS_S01_L1_002",
+            "FSS_S01_L2_018",
             "FSS_S02_B1_003",
             "FSS_S02_B1_004",
             "FSS_S02_B2_005",
             "FSS_S02_B2_006",
             "FSS_S02_L1_001",
             "FSS_S02_L1_002",
+            "FSS_S03_B1_003",
             "FSS_S03_B6_013",
             "FSS_S03_B7_015",
             "FSS_S04_B6_013",
             "FSS_S04_B7_015",
+            "FSS_S05_B1_003",
+            "FSS_S05_B2_005",
+            "FSS_S05_B4_009",
             "FSS_S05_B5_011",
             "FSS_S05_L2_017",
+            "FSS_S06_B1_003",
+            "FSS_S06_B2_005",
             "FSS_S06_B6_013",
-            "FSS_S06_B7_015"
+            "FSS_S06_B7_015",
+            "FSS_S06_L1_001",
+            "FSS_S07_B1_003",
+            "FSS_S07_B1_004",
+            "FSS_S07_B2_005",
+            "FSS_S07_B2_006",
+            "FSS_S07_B3_008",
+            "FSS_S07_B5_011",
+            "FSS_S07_B5_012",
+            "FSS_S07_L1_001"
         ]
     },
     "model-hyper-para": {
-        "depth": 4,
+        "depth": 3,
         "n-repeat": 1
     },
     "mlp-hyper-para": {
-        "hidden": [
-            72,
-            36,
-            18
-        ]
+        "hidden": [648, 432]
     },
     "recurrent-hyper-para": {
         "pred-len": 36,
         "env-factor-num": 0,
-        "lstm-hidden-size": 55,
+        "lstm-hidden-size": 10,
         "rnn-hidden-size": 15,
         "gru-hidden-size": 15,
         "num-workers": 0,
@@ -59,12 +72,12 @@
     "model-config": {
         "num-workers": 0,
         "batch-size": 64,
-        "learning-rate": 0.006,
-        "epoch-num": 50,
-        "visdom-env": "Train Process 1",
+        "learning-rate": 0.01,
+        "epoch-num": 100,
+        "visdom-env": "Train Process 2",
         "load-model": false,
         "save-model": true,
-        "save-name": "type4-debug",
+        "save-name": "type4-p24d3r1g0f6",
         "show-attn": false
     },
     "predict-pics": {

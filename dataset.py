@@ -84,16 +84,22 @@ def get_data(filename, source, valid_set=True):
     x = data_process.section_normalization(np.array(x))
     y, normal_y = data_process.section_normalization_with_normalizer(np.array(y))
 
-    train_size = int(0.7 * len(x))
-    x_train, y_train = x[:train_size], y[:train_size]
     if valid_set:
-        x_val, x_test, y_val, y_test = train_test_split(x[train_size:], y[train_size:], test_size=0.66)
+        train_loc = int(0.3 * len(x))
+        # val_loc = int(0.55 * len(x))
+        test_loc = int(0.6 * len(x))
+        x_train, y_train = np.concatenate((x[:train_loc], x[test_loc:])), np.concatenate((y[:train_loc], y[test_loc:]))
+        # x_val, y_val = x[train_loc: val_loc], y[train_loc: val_loc]
+        x_test, y_test = x[train_loc: test_loc], y[train_loc: test_loc]
+        x_val, x_val1, y_val, y_val1 = train_test_split(x_test.copy(), y_test.copy(), test_size=0.66)
+
         print(f'数据集规模: x_train: {x_train.shape}, y_train: {y_train.shape},',
               f'x_val: {x_val.shape}, y_val: {y_val.shape},',
               f'x_test: {x_test.shape}, y_test: {y_test.shape}')
         return x_train, y_train, x_val, y_val, x_test, y_test, normal_y
     else:
-        x_test, y_test = x[train_size:], y[train_size:]
-        print(f'数据集规模: x_train: {x_train.shape}, y_train: {y_train.shape},',
-              f'x_test: {x_test.shape}, y_test: {y_test.shape}')
+        train_loc = int(0.7 * len(x))
+        test_loc = int(1.0 * len(x))
+        x_train, y_train = np.concatenate((x[:train_loc], x[test_loc:])), np.concatenate((y[:train_loc], y[test_loc:]))
+        x_test, y_test = x[train_loc:test_loc], y[train_loc:test_loc]
         return x_train, y_train, x_test, y_test, normal_y
