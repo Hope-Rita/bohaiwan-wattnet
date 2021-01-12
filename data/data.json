@@ -11,6 +11,26 @@
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\data-in-10minutes.npy",
         "server": "/home/lwt/bohaiwan-wattnet/data/data-in-10minutes.npy"
     },
+    "bohaiwan2020-1": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data1.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data1.csv"
+    },
+    "bohaiwan2020-2": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data2.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data2.csv"
+    },
+    "bohaiwan2020-3": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data3.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data3.csv"
+    },
+    "bohaiwan2020-4": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data4.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data4.csv"
+    },
+    "bohaiwan2020-5": {
+        "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\bohaiwan2020_data5.csv",
+        "server": "/home/lwt/bohaiwan-wattnet/data/bohaiwan2020_data5.csv"
+    },
     "label": {
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\label.csv",
         "server": "/home/lwt/bohaiwan-wattnet/data/label.csv"

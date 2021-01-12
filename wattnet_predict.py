@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import time
 import os
+import copy
 from torch import optim
 from torch.utils.data import TensorDataset
 from visdom import Visdom
@@ -75,6 +76,8 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     opt = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=2, threshold=1e-3, min_lr=1e-6)
     min_loss, min_epoch = np.inf, 0
+    min_val_loss = np.inf
+    best_model = None
     train_loss_record, val_loss_record = [], []
     viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
 
@@ -107,6 +110,9 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
                 val_loss += rmse(model(x), y).item() * len(x)
         val_loss /= len(val_loader.dataset)
         val_loss_record.append(val_loss)
+        if val_loss < min_val_loss:
+            min_val_loss = val_loss
+            best_model = copy.deepcopy(model)
         scheduler.step(val_loss)  # 更新学习率
         print(f'train_loss: {train_loss}, valid_loss: {val_loss}, min_loss: {min_loss}, min_epoch: {min_epoch}')
         viz.line(Y=np.array([train_loss, val_loss]).reshape(1, 2),
@@ -119,7 +125,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     # 绘制 loss 变化图
     if draw_loss_pic:
         train_process_pic(train_loss_record, val_loss_record, title=f'Train Process {save_name}')
-    return model
+    return best_model
 
 
 def get_dataloader(x_train, y_train, x_val, y_val, x_test):

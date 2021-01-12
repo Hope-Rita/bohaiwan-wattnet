@@ -8,12 +8,19 @@ from utils.config import Config
 conf = Config()
 
 # 加载运行配置
-pred_len, future_len, move_interval, valid_sensors = \
-    conf.get_config('data-parameters', inner_keys=['pred-len', 'future-len', 'move-interval', 'valid-sensors'])
-print(f'载入dataset模块, pred: {pred_len}, future: {future_len}, interval: {move_interval}')
+pred_len, future_gap, future_len, move_interval, valid_sensors = \
+    conf.get_config('data-parameters', inner_keys=['pred-len',
+                                                   'future-gap',
+                                                   'future-len',
+                                                   'move-interval',
+                                                   'valid-sensors'
+                                                   ]
+                    )
+print(f'载入dataset模块, pred: {pred_len}, gap: {future_gap}, future: {future_len}, interval: {move_interval}')
 
 
-def get_data(filename, valid_set=True):
+# 用于加载李慧的竞赛数据
+def get_lihui_data(filename):
 
     def is_valid_index(idx):
         valid = True
@@ -37,6 +44,42 @@ def get_data(filename, valid_set=True):
         if is_valid_index(i):
             x.append(raw_data[i: i + pred_len, valid_sensors])
             y.append(raw_data[i + pred_len: i + pred_len + future_len, valid_sensors])
+
+    return x, y
+
+
+# 用于加载南京的隧道数据
+def get_nanjing_data(filename):
+    frame = pd.read_csv(filename, parse_dates=True, index_col='time')
+    x, y, pred_times = [], [], []
+
+    for time in pd.date_range(frame.index[0], frame.index[-1], freq='H'):
+
+        pred_time_start = time + pd.Timedelta(hours=(pred_len + future_gap))
+        pred_time_end = pred_time_start + pd.Timedelta(hours=(future_len - 1))
+        if pred_time_end > frame.index[-1]:
+            break
+        x.append(frame.loc[time: time + pd.Timedelta(hours=(pred_len - 1))].to_numpy())
+        y.append(frame.loc[pred_time_start: pred_time_end].to_numpy())
+        pred_times.append(pred_time_start)
+
+    return x, y
+    
+
+def get_data(filename, source, valid_set=True):
+    """
+    加载数据
+    :param filename: 存放数据的文件名
+    :param source: 数据来源
+    :param valid_set: 是否生成验证集
+    """
+
+    if source == 'lihui':
+        x, y = get_lihui_data(filename)
+    elif source == 'nanjing':
+        x, y = get_nanjing_data(filename)
+    else:
+        raise ValueError('No such source: ' + source)
 
     x = data_process.section_normalization(np.array(x))
     y, normal_y = data_process.section_normalization_with_normalizer(np.array(y))

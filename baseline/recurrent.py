@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from tqdm import trange
 from utils.config import Config
 from baseline.recurrent_fusion import RNNFusion, GRUFusion, LSTMFusion
+from baseline.recurrent_seq import RNNSeqPredict, GRUSeqPredict, LSTMSeqPredict
 from utils import normalization
 from utils.metric import RMSELoss
 
@@ -31,6 +32,7 @@ else:
     device = torch.device('cpu')
 # 加载数据参数
 pred_len, env_factor_num = conf.get_config('recurrent-hyper-para', inner_keys=['pred-len', 'env-factor-num'])
+sensor_num, future_len = conf.get_config('data-parameters', inner_keys=['sensor-num', 'future-len'])
 # 存放模型参数的路径
 para_save_path = conf.get_config('model-weights-loc', 'local' if conf.get_config('run-on-local') else 'server')
 
@@ -75,6 +77,33 @@ def gru_union_predict(x_train, y_train, x_test):
 def rnn_union_predict(x_train, y_train, x_test):
     model = RNNFusion(time_series_len=pred_len, input_feature=1).to(device)
     return union_predict(model, x_train, y_train, x_test)
+
+
+def seq_predict(model, x_train, y_train, x_test):
+    # 加载数据
+    data_loader, x_test = get_dataloader(x_train, y_train, x_test, normalize=False)
+    # 训练模型
+    model = train_model(model, data_loader)
+
+    # 将输出的结果进行处理并返回
+    pred = model(x_test)
+    pred = pred.data.to('cpu').numpy()
+    return pred
+
+
+def rnn_seq_predict(x_train, y_train, x_test):
+    model = RNNSeqPredict(sensor_num=sensor_num, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
+
+
+def gru_seq_predict(x_train, y_train, x_test):
+    model = GRUSeqPredict(sensor_num=sensor_num, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
+
+
+def lstm_seq_predict(x_train, y_train, x_test):
+    model = LSTMSeqPredict(sensor_num=sensor_num, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
 
 
 def train_model(model, data_loader):
