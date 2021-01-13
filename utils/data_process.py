@@ -38,12 +38,25 @@ def dump_csv(dirname, filename, data, average_func=None):
     print('完成预测，已写入', filename)
 
     if average_func:
-        # 统计总体的平均 RMSE, MAE 和 PCC
-        print('RMSE', average_func(df.loc[:, 'RMSE']))
-        print('MAE', average_func(df.loc[:, 'MAE']))
-        print('MAPE', average_func(df.loc[:, 'MAPE']))
-        print('PCC', average_func(df.loc[:, 'PCC']))
+        average_metric(df, average_func)
 
+    print()
+
+
+def average_metric(data, average_func):
+    """
+    输出指标数据的平均值
+    :param data: 指标数据，格式为 List[dict] 或 DataFrame
+    :param average_func: 求均值的方法
+    """
+    # 转换格式
+    df = pd.DataFrame(data) if type(data) is list else data
+
+    # 统计总体的平均 RMSE, MAE 和 PCC
+    print('RMSE', average_func(df.loc[:, 'RMSE']))
+    print('MAE', average_func(df.loc[:, 'MAE']))
+    print('MAPE', average_func(df.loc[:, 'MAPE']))
+    print('PCC', average_func(df.loc[:, 'PCC']))
     print()
 
 
