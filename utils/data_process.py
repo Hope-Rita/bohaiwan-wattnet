@@ -79,35 +79,10 @@ def avg(series):
     return round(avg_val, 4)
 
 
-def col_normalization(data):
-    """
-    对样本集的每一列进行归一化
-    :param data: 类型为 numpy 数组
-    :return: 归一化后的样本集
-    """
-    return col_normalization_with_normalizer(data)[0]
-
-
-def col_normalization_with_normalizer(data):
-    """
-    对样本集的每一列进行归一化
-    :param data: 类型为 numpy 数组
-    :return: 归一化后的样本集和各列的 normalizers
-    """
-    normalizers = []
-    for i in range(data.shape[1]):
-        x = data[:, i]
-        normal_x = normalization.MinMaxNormal(x)
-        data[:, i] = normal_x.transform(x)
-        normalizers.append(normal_x)
-
-    return data, normalizers
-
-
 def section_normalization(data):
     """
-    对样本集的每一个切面进行归一化
-    :param data: 类型为 numpy 数组，形状为 (m, col_num, p + k)
+    对样本集的每一个传感器进行归一化
+    :param data: 类型为 numpy 数组，形状为 (m, pred_len, sensor_num)
     :return: 归一化后的样本集
     """
     return section_normalization_with_normalizer(data)[0]
@@ -115,9 +90,9 @@ def section_normalization(data):
 
 def section_normalization_with_normalizer(data):
     """
-    对样本集的每一个切面进行归一化
-    :param data: 类型为 numpy 数组, 形状为 (m, col_num, p + k)
-    :return: 归一化后的样本集和各个切面的 normalizers
+    对样本集的每一个传感器进行归一化
+    :param data: 类型为 numpy 数组, 形状为 (m, pred_len, sensor_num)
+    :return: 归一化后的样本集和各个传感器的 normalizers
     """
     normalizers = []
     for i in range(data.shape[2]):
@@ -132,18 +107,5 @@ def section_normalization_with_normalizer(data):
 def reverse_section_normalization(data, normalizer):
     for i in range(data.shape[2]):
         data[:, :, i] = normalizer[i].inverse_transform(data[:, :, i])
-
-    return data
-
-
-def reverse_col_transform(data, normalizers):
-    """
-    根据 normalizers 对每一列数据进行逆转换
-    :param data: 类型为 numpy 数组
-    :param normalizers: 转换器
-    :return: 转换好的数据
-    """
-    for i in range(data.shape[1]):
-        data[:, i] = normalizers[i].inverse_transform(data[:, i])
 
     return data
