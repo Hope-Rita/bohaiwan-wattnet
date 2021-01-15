@@ -7,6 +7,12 @@ hidden_size = tuple(conf.get_config('mlp-hyper-para', 'hidden'))
 
 
 def mlp_multiple_predict(x_train, y_train, x_test):
+    """
+    :param x_train: m, pred_len, sensor_num
+    :param y_train: m, future_len, sensor_num
+    :param x_test: m_test, pred_len, sensor_num
+    :return: pred in shape(m_test, future_len, sensor_num)
+    """
     m, p, s = x_train.shape
     future_len = conf.get_config('data-parameters', 'future-len')
     x_train = x_train.reshape(m, p * s)
@@ -16,7 +22,7 @@ def mlp_multiple_predict(x_train, y_train, x_test):
     return pred.reshape(-1, future_len, s)
 
 
-def mlp_predict(x_train, y_train, x_test):
+def mlp_single_predict(x_train, y_train, x_test):
     return model_fit(x_train, y_train).predict(x_test)
 
 

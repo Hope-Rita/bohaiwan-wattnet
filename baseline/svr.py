@@ -8,6 +8,12 @@ conf = Config()
 
 
 def svr_multiple_predict(x_train, y_train, x_test):
+    """
+    :param x_train: m, pred_len, sensor_num
+    :param y_train: m, future_len, sensor_num
+    :param x_test: m_test, pred_len, sensor_num
+    :return: pred in shape(m_test, future_len, sensor_num)
+    """
     m, p, s = x_train.shape
     future_len = conf.get_config('data-parameters', 'future-len')
     x_train = x_train.reshape(m, p * s)
@@ -15,20 +21,19 @@ def svr_multiple_predict(x_train, y_train, x_test):
 
     reg = MultiOutputRegressor(SVR(kernel='linear'))
     reg.fit(x_train, y_train)
-    pred = predict(reg, x_test.reshape(len(x_test), p * s))
-    # return np.expand_dims(pred, 1).repeat(future_len, axis=1)
+    pred = reg.predict(x_test.reshape(len(x_test), p * s))
     return pred.reshape(-1, future_len, s)
 
 
-def svr_predict(x_train, y_train, x_test):
-    return model_fit(x_train, y_train).predict(x_test)
+def svr_single_predict(x_train, y_train, x_test):
+    """
+    :param x_train: m, pred_len
+    :param y_train: m, future_len
+    :param x_test: m_test, pred_len
+    :return: pred in shape(m_test, future_len)
+    """
+    reg = MultiOutputRegressor(SVR(kernel='linear'))
+    reg.fit(x_train, y_train)
+    return reg.predict(x_test)
 
 
-def predict(model, x_test):
-    return model.predict(x_test)
-
-
-def model_fit(x_train, y_train):
-    svm_reg = LinearSVR()
-    svm_reg.fit(x_train, y_train)
-    return svm_reg
