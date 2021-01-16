@@ -47,7 +47,7 @@ def union_predict(model, x_train, y_train, x_test):
     @return: 预测结果，类型是 numpy 数组
     """
     # 加载数据
-    data_loader, x_test = get_dataloader(x_train, y_train, x_test, normalize=False)
+    data_loader, x_test = get_dataloader(x_train, y_train, x_test)
 
     if load_model:  # 加载已训练好的模型
         col = conf.get_config('predict-col')
@@ -64,24 +64,24 @@ def union_predict(model, x_train, y_train, x_test):
     return pred
 
 
-def lstm_union_predict(x_train, y_train, x_test):
-    model = LSTMFusion(time_series_len=pred_len, input_feature=1).to(device)
-    return union_predict(model, x_train, y_train, x_test)
+def lstm_single_predict(x_train, y_train, x_test):
+    model = LSTMSeqPredict(sensor_num=1, hidden_size=lstm_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
 
 
-def gru_union_predict(x_train, y_train, x_test):
-    model = GRUFusion(time_series_len=pred_len, input_feature=1).to(device)
-    return union_predict(model, x_train, y_train, x_test)
+def gru_single_predict(x_train, y_train, x_test):
+    model = GRUSeqPredict(sensor_num=1, hidden_size=gru_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
 
 
-def rnn_union_predict(x_train, y_train, x_test):
-    model = RNNFusion(time_series_len=pred_len, input_feature=1).to(device)
-    return union_predict(model, x_train, y_train, x_test)
+def rnn_single_predict(x_train, y_train, x_test):
+    model = RNNSeqPredict(sensor_num=1, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    return seq_predict(model, x_train, y_train, x_test)
 
 
 def seq_predict(model, x_train, y_train, x_test):
     # 加载数据
-    data_loader, x_test = get_dataloader(x_train, y_train, x_test, normalize=False)
+    data_loader, x_test = get_dataloader(x_train, y_train, x_test)
     # 训练模型
     model = train_model(model, data_loader)
 
@@ -97,12 +97,12 @@ def rnn_seq_predict(x_train, y_train, x_test):
 
 
 def gru_seq_predict(x_train, y_train, x_test):
-    model = GRUSeqPredict(sensor_num=sensor_num, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    model = GRUSeqPredict(sensor_num=sensor_num, hidden_size=gru_hidden_size, future_len=future_len).to(device)
     return seq_predict(model, x_train, y_train, x_test)
 
 
 def lstm_seq_predict(x_train, y_train, x_test):
-    model = LSTMSeqPredict(sensor_num=sensor_num, hidden_size=rnn_hidden_size, future_len=future_len).to(device)
+    model = LSTMSeqPredict(sensor_num=sensor_num, hidden_size=lstm_hidden_size, future_len=future_len).to(device)
     return seq_predict(model, x_train, y_train, x_test)
 
 
@@ -127,7 +127,7 @@ def train_model(model, data_loader):
 
                 with torch.set_grad_enabled(True):
                     pred_y = model(x)
-                    loss = rmse(pred_y, y)
+                    loss = rmse(pred_y.squeeze(), y)
                     train_loss += loss.item() * len(x)
 
                     opt.zero_grad()
@@ -151,17 +151,10 @@ def train_model(model, data_loader):
     return model
 
 
-def get_dataloader(x_train, y_train, x_test, normalize=True):
-    normal = None
-    if normalize:  # 归一化
-        normal = normalization.MinMaxNormal(y_train)
-        # x_train = normal.transform(x_train)
-        y_train = normal.transform(y_train)
-        # x_test = normal.transform(x_test)
-
+def get_dataloader(x_train, y_train, x_test):
     if x_train.ndim == 2:  # 改变形状格式, 使其变成三维的
-        x_train = x_train.reshape(-1, 1, x_train.shape[1])
-        x_test = x_test.reshape(-1, 1, x_test.shape[1])
+        x_train = x_train.reshape(-1, x_train.shape[1], 1)
+        x_test = x_test.reshape(-1, x_test.shape[1], 1)
 
     # 转换成 tensor
     x_train = torch.from_numpy(x_train).float().to(device)
@@ -171,8 +164,4 @@ def get_dataloader(x_train, y_train, x_test, normalize=True):
     # 构建 DataSet 和 DataLoader
     dataset = TensorDataset(x_train, y_train)
     data_loader = DataLoader(dataset=dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
-
-    if normalize:
-        return data_loader, x_test, normal
-    else:
-        return data_loader, x_test
+    return data_loader, x_test

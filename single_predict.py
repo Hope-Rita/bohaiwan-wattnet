@@ -10,13 +10,13 @@ from baseline.lr import lr_single_predict
 from baseline.svr import svr_single_predict
 from baseline.mlp import mlp_single_predict
 from baseline.ha import ha_predict
-from baseline.recurrent import rnn_union_predict, lstm_union_predict, gru_union_predict
+from baseline.recurrent import rnn_single_predict, gru_single_predict, lstm_single_predict
 
 
 if __name__ == '__main__':
     pred_target_filename = conf.predict_target
     sensor_name = conf.get_config('data-parameters', 'valid-sensors')
-    pred_func = mlp_single_predict
+    pred_func = rnn_single_predict
 
     x_train, y_train, x_test, y_test, normal_y = get_data(pred_target_filename, 'nanjing', valid_set=False)
 
