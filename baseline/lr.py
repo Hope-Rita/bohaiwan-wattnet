@@ -47,7 +47,7 @@ def lr_pca_predict(x_train, y_train, x_test):
     x_test = x_test.reshape(len(x_test), p * s)
     y_train = y_train.reshape(m, future_len * s)
 
-    estimator = PCA(n_components=100)
+    estimator = PCA(n_components=108)
     x_train_pca = estimator.fit_transform(x_train)
     x_test_pca = estimator.transform(x_test)
 
