@@ -8,15 +8,15 @@ from dataset import get_data
 from utils import data_process
 from utils import draw_pic
 from utils import metric
-from baseline.lr import lr_multiple_predict
+from baseline.lr import lr_multiple_predict, lr_pca_predict
 from baseline.svr import svr_multiple_predict
-from baseline.mlp import mlp_multiple_predict
+from baseline.mlp import mlp_multiple_predict, mlp_pca_predict
 from baseline.recurrent import rnn_seq_predict, gru_seq_predict, lstm_seq_predict
 
 
 if __name__ == '__main__':
     pred_target_filename = conf.predict_target
-    pred_func = mlp_multiple_predict
+    pred_func = lstm_seq_predict
     sensor_name = conf.get_config('data-parameters', 'valid-sensors')
     x_train, y_train, x_test, y_test, normal_y = get_data(pred_target_filename, 'nanjing', valid_set=False)
     pred = pred_func(x_train, y_train, x_test)

@@ -85,9 +85,9 @@ def get_data(filename, source, valid_set=True):
     y, normal_y = data_process.section_normalization_with_normalizer(np.array(y))
 
     if valid_set:
-        train_loc = int(0.3 * len(x))
+        train_loc = int(0.2 * len(x))
         # val_loc = int(0.55 * len(x))
-        test_loc = int(0.6 * len(x))
+        test_loc = int(0.5 * len(x))
         x_train, y_train = np.concatenate((x[:train_loc], x[test_loc:])), np.concatenate((y[:train_loc], y[test_loc:]))
         # x_val, y_val = x[train_loc: val_loc], y[train_loc: val_loc]
         x_test, y_test = x[train_loc: test_loc], y[train_loc: test_loc]
@@ -95,11 +95,12 @@ def get_data(filename, source, valid_set=True):
 
         print(f'数据集规模: x_train: {x_train.shape}, y_train: {y_train.shape},',
               f'x_val: {x_val.shape}, y_val: {y_val.shape},',
-              f'x_test: {x_test.shape}, y_test: {y_test.shape}')
+              f'x_test: {x_test.shape}, y_test: {y_test.shape}'
+              )
         return x_train, y_train, x_val, y_val, x_test, y_test, normal_y
     else:
-        train_loc = int(0.7 * len(x))
-        test_loc = int(1.0 * len(x))
+        train_loc = int(0.2 * len(x))
+        test_loc = int(0.5 * len(x))
         x_train, y_train = np.concatenate((x[:train_loc], x[test_loc:])), np.concatenate((y[:train_loc], y[test_loc:]))
         x_test, y_test = x[train_loc:test_loc], y[train_loc:test_loc]
         return x_train, y_train, x_test, y_test, normal_y
