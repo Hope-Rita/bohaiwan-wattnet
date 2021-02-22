@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import time
 import os
-import copy
 from torch import optim
 from torch.utils.data import TensorDataset
 from visdom import Visdom
@@ -15,7 +14,7 @@ from utils.draw_pic import train_process_pic
 
 conf = Config()
 # 加载模型训练的相关配置
-num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdom_env, save_name, show_attn \
+num_workers, batch, epoch_num, learning_rate, save_model, load_model, use_visdom, visdom_env, save_name, show_attn \
     = conf.get_config('model-config',
                       inner_keys=['num-workers',
                                   'batch-size',
@@ -23,6 +22,7 @@ num_workers, batch_size, epoch_num, learning_rate, save_model, load_model, visdo
                                   'learning-rate',
                                   'save-model',
                                   'load-model',
+                                  'use-visdom',
                                   'visdom-env',
                                   'save-name',
                                   'show-attn'
@@ -76,10 +76,10 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     opt = optim.Adam(model.parameters(), lr=learning_rate)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(opt, factor=0.5, patience=2, threshold=1e-3, min_lr=1e-6)
     min_loss, min_epoch = np.inf, 0
-    min_val_loss = np.inf
-    # best_model = None
     train_loss_record, val_loss_record = [], []
-    viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
+    viz = None
+    if use_visdom:
+        viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
 
     for epoch in range(epoch_num):
         now_time = time.strftime('%H:%M:%S')
@@ -89,8 +89,7 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
 
         # 训练阶段
         train_loss = 0.0
-        for i, data in enumerate(train_loader):
-            x, y = data
+        for i, (x, y) in enumerate(train_loader):
             with torch.set_grad_enabled(True):
                 pred_y = model(x)
                 loss = rmse(pred_y, y)
@@ -110,17 +109,16 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
                 val_loss += rmse(model(x), y).item() * len(x)
         val_loss /= len(val_loader.dataset)
         val_loss_record.append(val_loss)
-        if epoch >= 10 and val_loss < min_val_loss:
-            min_val_loss = val_loss
-            best_model = copy.deepcopy(model)
+
         scheduler.step(val_loss)  # 更新学习率
         print(f'train_loss: {train_loss}, valid_loss: {val_loss}, min_loss: {min_loss}, min_epoch: {min_epoch}')
-        viz.line(Y=np.array([train_loss, val_loss]).reshape(1, 2),
-                 X=np.array([epoch, epoch]).reshape(1, 2),
-                 win='line',
-                 update=(None if epoch == 0 else 'append'),
-                 opts={'legend': ['train_loss', 'valid_loss']}
-                 )
+        if use_visdom:
+            viz.line(Y=np.array([train_loss, val_loss]).reshape(1, 2),
+                     X=np.array([epoch, epoch]).reshape(1, 2),
+                     win='line',
+                     update=(None if epoch == 0 else 'append'),
+                     opts={'legend': ['train_loss', 'valid_loss']}
+                     )
 
     # 绘制 loss 变化图
     if draw_loss_pic:
@@ -138,7 +136,7 @@ def get_dataloader(x_train, y_train, x_val, y_val, x_test):
 
     # 构建 DataSet 和 DataLoader
     train_dataset = TensorDataset(x_train, y_train)
-    train_loader = BackgroundLoader(dataset=train_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    train_loader = BackgroundLoader(dataset=train_dataset, shuffle=True, batch_size=batch, num_workers=num_workers)
     val_dataset = TensorDataset(x_val, y_val)
-    val_loader = BackgroundLoader(dataset=val_dataset, shuffle=True, batch_size=batch_size, num_workers=num_workers)
+    val_loader = BackgroundLoader(dataset=val_dataset, shuffle=True, batch_size=batch, num_workers=num_workers)
     return train_loader, val_loader, x_test

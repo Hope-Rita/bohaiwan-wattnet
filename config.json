@@ -2,10 +2,10 @@
     "predict-target": "bohaiwan2020-2",
     "device": {
         "use-gpu": true,
-        "cuda": "cuda:2"
+        "cuda": "cuda:0"
     },
     "data-parameters": {
-        "pred-len": 6,
+        "pred-len": 24,
         "future-gap": 10,
         "future-len": 6,
         "sensor-num": 36,
@@ -50,7 +50,7 @@
         ]
     },
     "model-hyper-para": {
-        "depth": 1,
+        "depth": 3,
         "n-repeat": 1
     },
     "mlp-hyper-para": {
@@ -59,7 +59,7 @@
     "recurrent-hyper-para": {
         "pred-len": 36,
         "env-factor-num": 0,
-        "lstm-hidden-size": 10,
+        "lstm-hidden-size": 20,
         "rnn-hidden-size": 15,
         "gru-hidden-size": 15,
         "num-workers": 0,
@@ -74,10 +74,11 @@
         "batch-size": 64,
         "learning-rate": 0.03,
         "epoch-num": 100,
+        "use-visdom": false,
         "visdom-env": "Train Process 1",
         "load-model": false,
         "save-model": true,
-        "save-name": "p6d1r1g10f6",
+        "save-name": "p24d3r1g10f6",
         "show-attn": false
     },
     "predict-pics": {

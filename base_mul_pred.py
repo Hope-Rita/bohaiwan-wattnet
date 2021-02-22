@@ -22,7 +22,6 @@ if __name__ == '__main__':
     pred = pred_func(x_train, y_train, x_test)
     pred = data_process.reverse_section_normalization(pred, normal_y)
     y_test = data_process.reverse_section_normalization(y_test, normal_y)
-
     # 输出预测指标
     metrics = metric.metric_for_each_sensor(y_test, pred, sensor_name)
     # 存储预测结果
@@ -32,3 +31,9 @@ if __name__ == '__main__':
                           data=metrics,
                           average_func=data_process.avg
                           )
+    data_process.dump_pred_res(dirname=conf.get_config('predict-res-table', conf.run_location),
+                               filename=time.strftime('%Y-%m-%d-%H-%M-%S') + '_' + pred_func.__name__ + '.csv',
+                               y=y_test,
+                               pred=pred,
+                               sensor_name=sensor_name
+                               )
