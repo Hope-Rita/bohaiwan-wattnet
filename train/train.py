@@ -1,5 +1,9 @@
 import torch
 from torch import optim
+
+from baseline.GRU import GRU
+from baseline.LSTM import LSTM
+from baseline.RNN import RNN
 from models.optim.NoamOpt import NoamOpt
 from models.wattnet import WATTNet
 from utils.data_loader import load_data
@@ -25,26 +29,28 @@ def create_model(model_name, params):
         depth = get_Parameter((model_name,'depth'))
         n_repeat = get_Parameter((model_name,'n_repeat'))
         show_attn = get_Parameter((model_name,'show_attn'))
-        return WATTNet(series_len=pred_len, in_dim=sensor_num, out_dim=future_len, depth=depth, n_repeat=n_repeat, show_attn_alpha=show_attn)
+        embed_dim = get_Parameter((model_name,'embed_dim'))
+        feat_dim = get_Parameter('covariate_size')
+        return WATTNet(series_len=pred_len, in_dim=sensor_num, emb_dim=embed_dim, out_dim=future_len, depth=depth, n_repeat=n_repeat,feat_dim=feat_dim, show_attn_alpha=show_attn)
 
-    # elif model_name == 'lstm':
-    #     input_size = get_Parameter('input_size')
-    #     hidden_size = get_Parameter((model_name, 'hidden_size'))
-    #     num_layers = get_Parameter((model_name, 'num_layers'))
-    #     output_size = get_Parameter('target')
-    #     return LSTM(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
-    # elif model_name == 'rnn':
-    #     input_size = get_Parameter('input_size')
-    #     hidden_size = get_Parameter((model_name, 'hidden_size'))
-    #     num_layers = get_Parameter((model_name, 'num_layers'))
-    #     output_size = get_Parameter('target')
-    #     return RNN(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
-    # elif model_name == 'gru':
-    #     input_size = get_Parameter('input_size')
-    #     hidden_size = get_Parameter((model_name, 'hidden_size'))
-    #     num_layers = get_Parameter((model_name, 'num_layers'))
-    #     output_size = get_Parameter('target')
-    #     return GRU(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
+    elif model_name == 'lstm':
+        input_size = get_Parameter('input_size')
+        hidden_size = get_Parameter((model_name, 'hidden_size'))
+        num_layers = get_Parameter((model_name, 'num_layers'))
+        output_size = get_Parameter('target')
+        return LSTM(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
+    elif model_name == 'rnn':
+        input_size = get_Parameter('input_size')
+        hidden_size = get_Parameter((model_name, 'hidden_size'))
+        num_layers = get_Parameter((model_name, 'num_layers'))
+        output_size = get_Parameter('target')
+        return RNN(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
+    elif model_name == 'gru':
+        input_size = get_Parameter('input_size')
+        hidden_size = get_Parameter((model_name, 'hidden_size'))
+        num_layers = get_Parameter((model_name, 'num_layers'))
+        output_size = get_Parameter('target')
+        return GRU(input_size, hidden=hidden_size, num_layers=num_layers, output_len=output_size)
 
 def test_model(model, data_loader, mode, teaching_force=False, **kwargs):
     predictions = list()
@@ -65,7 +71,7 @@ def test_model(model, data_loader, mode, teaching_force=False, **kwargs):
                 outputs, attn_list = model(features, truth, **kwargs)
                 attn_record.append(attn_list.cpu().numpy())
             else:
-                outputs = model(features)
+                outputs = model(features,covariate)
             outputs = outputs.detach().cpu().numpy()
             truth = truth.detach().cpu().numpy()
             outputs, truth = normalized_transform(outputs, truth, **kwargs)

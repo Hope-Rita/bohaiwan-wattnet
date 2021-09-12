@@ -48,7 +48,7 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                     if kwargs['return_attn']:
                         outputs, attn_list = model(features, truth, kwargs)
                     else:
-                        outputs = model(features)
+                        outputs = model(features,covariate)
 
                     if get_Parameter('loss_normalized'):
                         outputs = outputs.detach().cpu().numpy()
