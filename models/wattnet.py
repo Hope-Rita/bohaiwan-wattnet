@@ -3,7 +3,7 @@ from .modules import *
 
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=4, dropout_prob=0.2, n_repeat=2,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1,
                  show_attn_alpha=False):
         """
         Args:
@@ -43,12 +43,12 @@ class WATTNet(nn.Module):
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
         # better performance
-        self.pre_mlp = MLP(in_dim, self.w_dim, out_softmax=False)
+        # self.pre_mlp = MLP(in_dim, self.w_dim, out_softmax=False)
 
         # post fully-connected head not always necessary. When sequence length perfectly aligns
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
-        self.post_mlp = MLP(self.w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
+        # self.post_mlp = MLP(self.w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
         self.output_fc = nn.Linear(series_len - sum(self.dilations), out_dim)
 
     def forward(self, x_in):

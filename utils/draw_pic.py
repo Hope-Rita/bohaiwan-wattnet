@@ -4,8 +4,8 @@ import numpy as np
 import os
 from utils.config import Config
 
-
-conf = Config()
+if __name__ == '__main__':
+    conf = Config()
 
 
 def all_predict(y_dict):
