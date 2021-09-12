@@ -52,7 +52,7 @@ def load_data(data_dirs, batch_size, normalized=1):
     data = {}
     phases = ['train', 'val', 'test']
     data_all = None
-    str = '-30-15'
+    str = '-33-15'
     for phase in phases:
         cat_data = np.load(os.path.join(data_dirs, phase + str + '.npy'))
         data['x_' + phase] = cat_data[:, :get_Parameter('window'), :get_Parameter('input_size')]

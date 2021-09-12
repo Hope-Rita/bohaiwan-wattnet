@@ -41,6 +41,7 @@ class WATTNet(nn.Module):
 
         # self.emb_conv = nn.Conv2d(1+self.feat_dim, emb_dim, kernel_size=1)
         self.emb_conv = nn.Linear(1+self.feat_dim,emb_dim)
+        self.dec_conv = nn.Linear(emb_dim,1)
         # self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim), groups=self.w_dim)
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
@@ -109,6 +110,13 @@ class WATTNet(nn.Module):
         # x_out = self.post_mlp(x_out)  # N, H, sensor_num
         x_out = self.output_fc(x_out.transpose(1, 2))
         x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
+        # x_out = x_in
+        # if self.emb_dim > 1:
+        #     x_out = self.dec_conv(x_out.reshape(-1,self.emb_dim))
+        #     x_out = x_out.reshape(B,N,-1)
+        # x_out = self.output_fc(x_out.reshape(B*N,-1))
+        # x_out = x_out.reshape(B,N,-1).transpose(1,2)
+
         return x_out
 
     @property
