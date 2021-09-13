@@ -28,26 +28,26 @@ from utils.load_config import get_Parameter
 
 data = np.load('result/'+get_Parameter('model_name')+'/'+get_Parameter('model_name')+'-truth.npy')
 print(data.shape)
-time = 5
+time = 0
 data1 = data[:,time,:]
-data2 = data[:,4,:]
+# data2 = data[:,4,:]
 # data3 = data[:,2,:]
 
 pred = np.load('result/'+get_Parameter('model_name')+'/'+get_Parameter('model_name')+'-pred.npy')
 pred1 =pred[:,time,:]
-pred2 = pred[:,11,:]
+# pred2 = pred[:,11,:]
 # truth3 = truth[:,2,:]
 
 # print(pred[:,10,3]-pred[:,8,3])
 
-index = 0
+index = 3
 start = 0
 len = min(pred1.shape[0],data1.shape[0])
 # len -= 11
 # plot中参数的含义分别是横轴值，纵轴值，线的形状，颜色，透明度,线的宽度和标签
-len = 100
+# len = 100
 y = range(len)
-plt.plot(y, pred2[start:start+len,index],  '-', color='red', alpha=0.8, linewidth=1.5,label='truth')
+plt.plot(y, data1[start:start+len,index],  '-', color='red', alpha=0.8, linewidth=1.5,label='truth')
 plt.plot(y, pred1[start:start+len,index],'-', color='blue', alpha=0.8, linewidth=0.8,label='pred')
 # 显示标签，如果不加这句，即使在plot中加了label='一些数字'的参数，最终还是不会显示标签
 plt.legend(loc="upper right")
@@ -60,7 +60,7 @@ plt.ylabel('y-'+str(time)+'-'+str(index))
 #     pre = data
 print(data1[:,index],pred1[:,index])
 plt.show()
-mse = np.sqrt(mean_squared_error(data1[:], pred1[:]))
+mse = np.sqrt(mean_squared_error(data1[:,index], pred1[:,index]))
 # print(data1[:,index],truth1[:,index])
 print(mse)
 

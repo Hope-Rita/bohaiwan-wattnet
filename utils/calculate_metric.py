@@ -38,10 +38,10 @@ def masked_mape_np(preds, labels, null_val=np.nan):
             # mask = labels>10
         mask = mask.astype('float32')
         mask /= np.mean(mask)
-        mape = np.abs(np.divide(np.subtract(preds, labels).astype('float32'), labels + 1e-5))
+        mape = np.abs(np.divide(np.subtract(preds, labels).astype('float32'), labels))
         mape = np.nan_to_num(mask * mape)
         mape = np.nan_to_num(mape)
-        return np.mean(mape)
+        return np.mean(mape*100)
 
 
 def cal_pcc(preds, labels):
