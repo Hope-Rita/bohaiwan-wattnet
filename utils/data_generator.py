@@ -60,13 +60,13 @@ class Data_utility():
         return [X, Y]
 
 def get_train_data(from_path, to_path):
-    d = Data_utility(data_path=from_path, train=0.7, valid=0.1, window=33, target=15, gap=0)
+    d = Data_utility(data_path=from_path, train=0.7, valid=0.1, window=36, target=15, gap=0)
     train = np.concatenate(d.train, axis=1)
     valid = np.concatenate(d.valid, axis=1)
     test = np.concatenate(d.test, axis=1)
-    np.save(os.path.join(to_path, 'train-33-15.npy'), train[:,:,:7])
-    np.save(os.path.join(to_path, 'val-33-15.npy'), valid[:,:,:7])
-    np.save(os.path.join(to_path, 'test-33-15.npy'), test[:,:,:7])
+    np.save(os.path.join(to_path, 'train-36-15.npy'), train[:,:,:7])
+    np.save(os.path.join(to_path, 'val-36-15.npy'), valid[:,:,:7])
+    np.save(os.path.join(to_path, 'test-36-15.npy'), test[:,:,:7])
     np.save(os.path.join(to_path, 'mean.npy'), d.mean[:4])
     np.save(os.path.join(to_path, 'std.npy'), d.std[:4])
     np.save(os.path.join(to_path, 'max.npy'), d.max[:4])
@@ -86,5 +86,5 @@ def xlsx_to_csv_pd():
 
 if __name__ == '__main__':
     # xlsx_to_csv_pd()
-    get_train_data(from_path='../data/data.csv', to_path='../data/33-15/')
+    get_train_data(from_path='../data/data.csv', to_path='../data/36-15/')
     # print("data_generator")
