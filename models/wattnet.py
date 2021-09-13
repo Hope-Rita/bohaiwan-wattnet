@@ -41,8 +41,8 @@ class WATTNet(nn.Module):
 
         # self.emb_conv = nn.Conv2d(1+self.feat_dim, emb_dim, kernel_size=1)
         self.emb_conv = nn.Linear(1+self.feat_dim,emb_dim)
-        self.dec_conv = nn.Linear(emb_dim,1)
-        # self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim), groups=self.w_dim)
+        # self.dec_conv = nn.Linear(emb_dim,1)
+        self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim), groups=self.w_dim)
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
         # better performance
@@ -67,7 +67,7 @@ class WATTNet(nn.Module):
         B,T,N = x_in.shape
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
         feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*3*N->B*T*N*3
-        x_in = torch.cat([x_in,feature],dim=-1)  # B*4*T*N
+        x_in = torch.cat([x_in,feature[...,0:1],feature[...,-1:]],dim=-1)  # B*4*T*N
 
 
         if self.emb_dim > 1:
