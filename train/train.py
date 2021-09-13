@@ -171,6 +171,6 @@ def train():
         #     model = train_my_model(model, data_loader=data_loader, loss_func=loss, optimizer=optimizer,
         #                         num_epochs=num_epoches, model_folder=model_folder,
         #                         tensorboard_folder=tensorboard_folder, **params)
-    model.load_state_dict(torch.load(os.path.join(model_folder, 'best_model_27-15.pkl'))['model_state_dict'])
+    model.load_state_dict(torch.load(os.path.join(model_folder, 'best_model_24-15.pkl'))['model_state_dict'])
     attn = test_model(model, data_loader['test'], mode='test', **params)
     return attn

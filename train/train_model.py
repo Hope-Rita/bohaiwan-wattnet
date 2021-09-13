@@ -93,7 +93,7 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                 loss_global = scores['RMSE']
                 save_dict.update(model_state_dict=copy.deepcopy(model.state_dict()), epoch=epoch,
                                  optimizer_state_dict=copy.deepcopy(optimizer.state_dict()))
-                save_model(f'{model_folder}/best_model_27-15.pkl', **save_dict)
+                save_model(f'{model_folder}/best_model_24-15.pkl', **save_dict)
 
         scheduler.step(running_loss['train'])
         writer.add_scalars('Loss', {
