@@ -2,10 +2,10 @@
     "predict-target": "beihang",
     "device": {
         "use-gpu": true,
-        "cuda": "cuda:0"
+        "cuda": "cuda:1"
     },
     "data-parameters": {
-        "pred-len": 21,
+        "pred-len": 27,
         "future-gap": 0,
         "future-len": 15,
         "sensor-num": 4,
@@ -44,7 +44,7 @@
         "epoch-num": 100,
         "use-visdom": false,
         "visdom-env": "Train Process 1",
-        "load-model": true,
+        "load-model": false,
         "save-model": true,
         "save-name": "p24d3r1g10f6",
         "show-attn": false

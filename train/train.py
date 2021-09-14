@@ -71,7 +71,8 @@ def test_model(model, data_loader, mode, teaching_force=False, **kwargs):
                 outputs, attn_list = model(features, truth, **kwargs)
                 attn_record.append(attn_list.cpu().numpy())
             else:
-                outputs = model(features,covariate)
+                # outputs = model(features,covariate)
+                outputs = model(features)
             outputs = outputs.detach().cpu().numpy()
             truth = truth.detach().cpu().numpy()
             outputs, truth = normalized_transform(outputs, truth, **kwargs)

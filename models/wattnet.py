@@ -3,7 +3,7 @@ from .modules import *
 import torch
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=0,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=1,
                  show_attn_alpha=False):
         """
         Args:
@@ -66,14 +66,17 @@ class WATTNet(nn.Module):
             x_in: 'N, H, W' where `N` is the batch dimension, `C` the one-hot
                   embedding dimension, `H` is the temporal dimension, `W` is the
                   second dimension of the timeseries (e.g timeseries for different FX pairs)
-            feature: B*T*3
+            x_in: B*T*(N+3)
         Returns:
         """
         # x_in = self.pre_mlp(x_in)
+        feature = x_in[...,-3:]
+        x_in = x_in[...,:-3]
         B,T,N = x_in.shape
+
+        feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
-        # feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
-        # x_in = torch.cat([x_in,feature[...,0:1],feature[...,-1:]],dim=-1)  # B*T*N*4
+        x_in = torch.cat([x_in,feature[...,-1:]],dim=-1)  # B*T*N*4
 
 
         if self.emb_dim > 1:

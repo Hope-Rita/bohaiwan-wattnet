@@ -48,7 +48,8 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                     if kwargs['return_attn']:
                         outputs, attn_list = model(features, truth, kwargs)
                     else:
-                        outputs = model(features,covariate)
+                        # outputs = model(features,covariate)
+                        outputs = model(features)
 
                     if get_Parameter('loss_normalized'):
                         outputs = outputs.detach().cpu().numpy()
@@ -71,6 +72,8 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                         optimizer.step()
                         list_loss.append(loss.item())
                         global_step += 1
+                    # elif phase == 'val':
+                    #     scheduler.step(loss)
                 targets.append(truth.detach().cpu().numpy())
                 with torch.no_grad():
                     predictions.append(outputs.cpu().numpy())
