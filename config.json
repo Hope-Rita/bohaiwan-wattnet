@@ -5,9 +5,9 @@
         "cuda": "cuda:1"
     },
     "data-parameters": {
-        "pred-len": 27,
+        "pred-len": 30,
         "future-gap": 0,
-        "future-len": 21,
+        "future-len": 14,
         "sensor-num": 4,
         "move-interval": 1,
         "valid-sensors": [
@@ -18,7 +18,7 @@
         ]
     },
     "model-hyper-para": {
-        "depth": 2,
+        "depth": 3,
         "n-repeat": 1
     },
     "mlp-hyper-para": {
