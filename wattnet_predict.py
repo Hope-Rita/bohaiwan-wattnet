@@ -53,7 +53,7 @@ def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
                     ).to(device)
     print(f'载入模型:{model.name}, depth: {depth}, n_repeat: {n_repeat}')
     train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)
-
+    save_name = '21-14'
     path = os.path.join(para_save_path, f'{model.name}-{save_name}.pkl')
     if load_model:  # 加载模型
         model.load_state_dict(torch.load(path, map_location=conf.get_config('device', 'cuda')))

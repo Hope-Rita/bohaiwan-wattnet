@@ -7,7 +7,7 @@
     "data-parameters": {
         "pred-len": 21,
         "future-gap": 0,
-        "future-len": 15,
+        "future-len": 21,
         "sensor-num": 4,
         "move-interval": 1,
         "valid-sensors": [
@@ -44,7 +44,7 @@
         "epoch-num": 100,
         "use-visdom": false,
         "visdom-env": "Train Process 1",
-        "load-model": false,
+        "load-model": true,
         "save-model": true,
         "save-name": "p24d3r1g10f6",
         "show-attn": false
