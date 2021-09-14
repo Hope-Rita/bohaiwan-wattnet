@@ -46,16 +46,20 @@ class AttentionBlock(nn.Module):
 
 
 class GatedBlock(nn.Module):
-    def __init__(self, dilation: int, w_dim: int):
+    def __init__(self, dilation: int, w_dim: int, seq_in, seq_out):
         """Gated block with sigmoid/tanh gates."""
         super().__init__()
         self.dilation = dilation
+        self.res = nn.Linear(seq_in,seq_out)
         self.tanh_conv = nn.Conv2d(w_dim, w_dim, kernel_size=(2, 1), dilation=(dilation, 1), groups=w_dim)
         self.sigmoid_conv = nn.Conv2d(w_dim, w_dim, kernel_size=(2, 1), dilation=(dilation, 1), groups=w_dim)
         self.out_conv = nn.Conv2d(w_dim, w_dim, kernel_size=1, groups=w_dim)
 
     def forward(self, x_in):
+        B,N,T,F = x_in.shape
         x_tanh, x_sigmoid = self.tanh_conv(x_in), self.sigmoid_conv(x_in)
         x_gate = torch.tanh(x_tanh) * torch.sigmoid(x_sigmoid)
-        x_out = self.out_conv(x_gate + x_in[:, :, -x_gate.size(2):, :])
+        x_res = self.res(x_in.transpose(2,3).reshape(-1,T))
+        x_res = x_res.reshape(B,N,F,-1).transpose(2,3)
+        x_out = self.out_conv(x_gate + x_res)
         return x_out  # (N, w_dim, H-dilation, ebd_dim)

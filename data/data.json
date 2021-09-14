@@ -42,5 +42,9 @@
     "label": {
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\data\\label.csv",
         "server": "/home/lwt/bohaiwan-wattnet/data/label.csv"
+    },
+    "beihang": {
+        "local": "D:/Github/bohaiwan-wattnet/data/data.csv",
+        "server": "/home/zoutao/lwt-prediction/data/data.csv"
     }
 }

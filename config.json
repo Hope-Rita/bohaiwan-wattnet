@@ -1,52 +1,20 @@
 {
-    "predict-target": "bohaiwan2020-2",
+    "predict-target": "beihang",
     "device": {
         "use-gpu": true,
         "cuda": "cuda:0"
     },
     "data-parameters": {
-        "pred-len": 24,
-        "future-gap": 10,
-        "future-len": 6,
-        "sensor-num": 36,
+        "pred-len": 21,
+        "future-gap": 0,
+        "future-len": 15,
+        "sensor-num": 4,
         "move-interval": 1,
         "valid-sensors": [
-            "FSS_S01_B1_003",
-            "FSS_S01_B1_004",
-            "FSS_S01_B2_005",
-            "FSS_S01_B2_006",
-            "FSS_S01_B3_007",
-            "FSS_S01_L1_002",
-            "FSS_S01_L2_018",
-            "FSS_S02_B1_003",
-            "FSS_S02_B1_004",
-            "FSS_S02_B2_005",
-            "FSS_S02_B2_006",
-            "FSS_S02_L1_001",
-            "FSS_S02_L1_002",
-            "FSS_S03_B1_003",
-            "FSS_S03_B6_013",
-            "FSS_S03_B7_015",
-            "FSS_S04_B6_013",
-            "FSS_S04_B7_015",
-            "FSS_S05_B1_003",
-            "FSS_S05_B2_005",
-            "FSS_S05_B4_009",
-            "FSS_S05_B5_011",
-            "FSS_S05_L2_017",
-            "FSS_S06_B1_003",
-            "FSS_S06_B2_005",
-            "FSS_S06_B6_013",
-            "FSS_S06_B7_015",
-            "FSS_S06_L1_001",
-            "FSS_S07_B1_003",
-            "FSS_S07_B1_004",
-            "FSS_S07_B2_005",
-            "FSS_S07_B2_006",
-            "FSS_S07_B3_008",
-            "FSS_S07_B5_011",
-            "FSS_S07_B5_012",
-            "FSS_S07_L1_001"
+            "sensor1",
+            "sensor2",
+            "sensor3",
+            "sensor4"
         ]
     },
     "model-hyper-para": {
@@ -76,21 +44,21 @@
         "epoch-num": 100,
         "use-visdom": false,
         "visdom-env": "Train Process 1",
-        "load-model": false,
+        "load-model": true,
         "save-model": true,
         "save-name": "p24d3r1g10f6",
         "show-attn": false
     },
     "predict-pics": {
-        "server": "/home/lwt/bohaiwan-wattnet/pred_res/pics",
+        "server": "/home/zoutao/lwt-prediction/pics",
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\pred_res\\pics"
     },
     "predict-res-table": {
-        "server": "/home/lwt/bohaiwan-wattnet/pred_res/tables",
+        "server": "/home/zoutao/lwt-prediction/tables",
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\pred_res\\tables"
     },
     "model-weights-loc": {
-        "server": "/home/lwt/bohaiwan-wattnet/model_paras",
+        "server": "/home/zoutao/lwt-prediction/result",
         "local": "C:\\WorkSpace\\bohaiwan-wattnet\\model_paras"
     },
     "run-on-local": false

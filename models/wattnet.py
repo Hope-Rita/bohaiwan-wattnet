@@ -3,7 +3,7 @@ from .modules import *
 import torch
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=3,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=0,
                  show_attn_alpha=False):
         """
         Args:
@@ -35,9 +35,15 @@ class WATTNet(nn.Module):
                                                               key_size=ltransf_dim,
                                                               value_size=ltransf_dim)
                                                for _ in self.dilations])
+        length = list()
+        ResBlocks = list()
+        total_len = series_len
+        for d in self.dilations:
+            length.append(total_len-d)
+            ResBlocks.append(GatedBlock(dilation=d, w_dim=self.w_dim,seq_in=total_len,seq_out=total_len-d))
+            total_len -= d
 
-        self.resblocks = nn.ModuleList([GatedBlock(dilation=d, w_dim=self.w_dim)
-                                        for d in self.dilations])
+        self.resblocks = nn.ModuleList(ResBlocks)
 
         # self.emb_conv = nn.Conv2d(1+self.feat_dim, emb_dim, kernel_size=1)
         self.emb_conv = nn.Linear(1+self.feat_dim,emb_dim)
@@ -51,10 +57,10 @@ class WATTNet(nn.Module):
         # post fully-connected head not always necessary. When sequence length perfectly aligns
         # with the number of time points lost to high dilation, (i.e single latent output by
         # alternating TCN and attention modules) the single latent can be used directly
-        # self.post_mlp = MLP(self.w_dim, in_dim, [512], out_softmax=False, drop_probability=dropout_prob)
+        # self.post_mlp = MLP(self.w_dim, in_dim, [32], out_softmax=False, drop_probability=dropout_prob)
         self.output_fc = nn.Linear(series_len - sum(self.dilations), out_dim)
 
-    def forward(self, x_in,feature):
+    def forward(self, x_in):
         """
         Args:
             x_in: 'N, H, W' where `N` is the batch dimension, `C` the one-hot
@@ -66,8 +72,8 @@ class WATTNet(nn.Module):
         # x_in = self.pre_mlp(x_in)
         B,T,N = x_in.shape
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
-        feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*3*N->B*T*N*3
-        x_in = torch.cat([x_in,feature[...,0:1],feature[...,-1:]],dim=-1)  # B*4*T*N
+        # feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
+        # x_in = torch.cat([x_in,feature[...,0:1],feature[...,-1:]],dim=-1)  # B*T*N*4
 
 
         if self.emb_dim > 1:
@@ -77,7 +83,7 @@ class WATTNet(nn.Module):
 
         # swap `W` dim to channel dimension for grouped convolutions
         # `N, W, H, C`
-        x_in = x_in.transpose(1, 2) # B*N*T*F
+        x_in = x_in.transpose(1, 2)     # B*N*T*F
 
         skip_connections = []
         for i in range(len(self.resblocks)):

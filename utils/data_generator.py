@@ -60,7 +60,7 @@ class Data_utility():
         return [X, Y]
 
 def get_train_data(from_path, to_path):
-    d = Data_utility(data_path=from_path, train=0.7, valid=0.1, window=21, target=7, gap=0)
+    d = Data_utility(data_path=from_path, train=0.7, valid=0.1, window=21, target=14, gap=0)
     train = np.concatenate(d.train, axis=1)
     valid = np.concatenate(d.valid, axis=1)
     test = np.concatenate(d.test, axis=1)

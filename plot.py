@@ -28,7 +28,7 @@ from utils.load_config import get_Parameter
 
 data = np.load('result/'+get_Parameter('model_name')+'/'+get_Parameter('model_name')+'-truth.npy')
 print(data.shape)
-time = 0
+time = 6
 data1 = data[:,time,:]
 # data2 = data[:,4,:]
 # data3 = data[:,2,:]
@@ -40,7 +40,7 @@ pred1 =pred[:,time,:]
 
 # print(pred[:,10,3]-pred[:,8,3])
 
-index = 3
+index = 2
 start = 0
 len = min(pred1.shape[0],data1.shape[0])
 # len -= 11

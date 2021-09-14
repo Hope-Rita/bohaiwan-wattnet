@@ -47,6 +47,15 @@ def get_lihui_data(filename):
 
     return x, y
 
+def get_beihang_data(filename):
+    raw_data = pd.read_csv(filename, header=0, index_col=0, encoding='utf-8').values
+    x, y = [], []
+    for i in range(0, len(raw_data) - pred_len - future_len, move_interval):
+        x.append(raw_data[i: i + pred_len, :4])
+        y.append(raw_data[i + pred_len: i + pred_len + future_len, :4])
+
+    return x, y
+
 
 # 用于加载南京的隧道数据
 def get_nanjing_data(filename):
@@ -78,6 +87,8 @@ def get_data(filename, source, valid_set=True):
         x, y = get_lihui_data(filename)
     elif source == 'nanjing':
         x, y = get_nanjing_data(filename)
+    elif source == 'beihang':
+        x, y = get_beihang_data(filename)
     else:
         raise ValueError('No such source: ' + source)
 

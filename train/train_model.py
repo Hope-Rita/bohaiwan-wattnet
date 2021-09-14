@@ -57,13 +57,13 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                         outputs = torch.from_numpy(outputs).requires_grad_(requires_grad=True)
                         truth = torch.from_numpy(truth).requires_grad_(requires_grad=True)
 
-                    # attn = [i for i in np.arange(6,6*(get_Parameter('target')) + 6, 6)]
+                    attn = [i for i in np.arange(6,6*(get_Parameter('target')) + 6, 6)]
                     # attn = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                    loss = loss_func(truth[:,0,:], outputs[:,0,:])
+                    loss = attn[0] * loss_func(truth[:,0,:], outputs[:,0,:])
                     # print(truth.shape)
                     if get_Parameter('target') > 1:
                         for time in range(1, get_Parameter('target')):
-                            loss += loss_func(truth[:,time,:], outputs[:,time ,:])
+                            loss += attn[time] * loss_func(truth[:,time,:], outputs[:,time ,:])
                     # loss = loss_func(truth, outputs)
                     if phase == 'train':
                         optimizer.zero_grad()

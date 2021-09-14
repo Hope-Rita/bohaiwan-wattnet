@@ -78,8 +78,8 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     min_loss, min_epoch = np.inf, 0
     train_loss_record, val_loss_record = [], []
     viz = None
-    if use_visdom:
-        viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
+    # if use_visdom:
+    #     viz = Visdom(env=visdom_env)  # 使用 visdom 进行实时可视化
 
     for epoch in range(epoch_num):
         now_time = time.strftime('%H:%M:%S')
