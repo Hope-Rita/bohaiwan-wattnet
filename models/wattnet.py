@@ -3,7 +3,7 @@ from .modules import *
 import torch
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=1,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=0,
                  show_attn_alpha=False):
         """
         Args:
@@ -76,8 +76,7 @@ class WATTNet(nn.Module):
 
         feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
-        x_in = torch.cat([x_in,feature[...,-1:]],dim=-1)  # B*T*N*4
-
+        # x_in = torch.cat([x_in,feature[...,-1:]],dim=-1)  # B*T*N*4
 
         if self.emb_dim > 1:
             x_in = self.emb_conv(x_in.reshape(-1,x_in.shape[-1]))
@@ -110,6 +109,7 @@ class WATTNet(nn.Module):
 
         # `N, W, H, C` ->  `N, W, H, 1`
         if self.emb_dim > 1:
+            # x_in = torch.cat([x_in,feature[...,-x_in.shape[2]:,1:]],dim=-1)
             x_in = self.dec_conv(x_in)
         # `N, W, H, 1` ->  `N, 1, H, W`
         x_out = x_in.transpose(1, 3)
