@@ -5,7 +5,7 @@
         "cuda": "cuda:1"
     },
     "data-parameters": {
-        "pred-len": 27,
+        "pred-len": 24,
         "future-gap": 0,
         "future-len": 14,
         "sensor-num": 4,
