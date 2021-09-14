@@ -3,7 +3,7 @@ from .modules import *
 import torch
 
 class WATTNet(nn.Module):
-    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=0,
+    def __init__(self, series_len, in_dim, out_dim, w_dim=16, emb_dim=16, depth=2, dropout_prob=0.2, n_repeat=1, feat_dim=2,
                  show_attn_alpha=False):
         """
         Args:
@@ -30,7 +30,7 @@ class WATTNet(nn.Module):
         self.feat_dim = feat_dim
         self.dilations = [2 ** i for i in range(1, depth + 1)] * n_repeat
 
-        ltransf_dim = self.w_dim * emb_dim
+        ltransf_dim = self.w_dim * (emb_dim+self.feat_dim)
         self.attention_blocks = nn.ModuleList([AttentionBlock(in_channels=self.w_dim,
                                                               key_size=ltransf_dim,
                                                               value_size=ltransf_dim)
@@ -46,9 +46,9 @@ class WATTNet(nn.Module):
         self.resblocks = nn.ModuleList(ResBlocks)
 
         # self.emb_conv = nn.Conv2d(1+self.feat_dim, emb_dim, kernel_size=1)
-        self.emb_conv = nn.Linear(1+self.feat_dim,emb_dim)
+        self.emb_conv = nn.Linear(1,emb_dim)
         # self.dec_conv = nn.Linear(emb_dim,1)
-        self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim), groups=self.w_dim)
+        self.dec_conv = nn.Conv2d(self.w_dim, self.w_dim, kernel_size=(1, emb_dim+self.feat_dim), groups=self.w_dim)
 
         # feature compression: when more memory/data is available, increasing w_dim can yield
         # better performance
@@ -76,12 +76,12 @@ class WATTNet(nn.Module):
 
         feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
-        # x_in = torch.cat([x_in,feature[...,-1:]],dim=-1)  # B*T*N*4
+        # x_in = torch.cat([x_in,feature[...,-2:]],dim=-1)  # B*T*N*4
 
         if self.emb_dim > 1:
             x_in = self.emb_conv(x_in.reshape(-1,x_in.shape[-1]))
             x_in = x_in.reshape(B,T,N,-1)   # B*T*N*F
-
+            x_in = torch.cat([x_in, feature[..., -2:]], dim=-1)  # B*T*N*4
 
         # swap `W` dim to channel dimension for grouped convolutions
         # `N, W, H, C`

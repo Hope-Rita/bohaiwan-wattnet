@@ -18,8 +18,8 @@ class Data_utility():
         # temp = self.normalized()
         # self.data = self.raw_data
         # self.data[:,4:] = temp[:,4:]
-        # self.data = self.normalized()
-        self.normalized()
+        self.data = self.normalized()
+        # self.normalized()
         self._split(int(train * self.length), int((train + valid) * self.length), self.length)
 
     # def indice_from_data(self, window, target):

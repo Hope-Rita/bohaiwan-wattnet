@@ -16,8 +16,8 @@ def model_fit(x_train, y_train):
     return linear_reg
 
 filename = '/home/zoutao/lwt-prediction/data/data.csv'
-d = Data_utility(data_path=filename, train=0.7, valid=0.1, window=36, target=15)
-window = 36
+d = Data_utility(data_path=filename, train=0.7, valid=0.1, window=21, target=21)
+window = 21
 test = np.concatenate(d.test, axis=1)
 train = np.concatenate(d.train, axis=1)
 train = train[:, :, :get_Parameter('input_size')]
