@@ -3,7 +3,8 @@ from torch import nn
 from utils.config import Config
 
 
-conf = Config()
+config_path = 'config.json'
+conf = Config(config_path)
 # 加载模型参数
 rnn_hidden_size = conf.get_config('recurrent-hyper-para', 'rnn-hidden-size')
 gru_hidden_size = conf.get_config('recurrent-hyper-para', 'gru-hidden-size')

@@ -1,12 +1,12 @@
 {
   "batch_size": 16,
-  "cuda": 0,
+  "cuda": null,
   "epochs": 160,
-  "window": 21,
+  "window": 15,
   "target": 14,
   "loss_function": "MSELoss",
   "optim": "Adam",
-  "mode": "train",
+  "mode": "test",
   "normalized": 2,
   "seperate_timestep": 14,
   "loss_normalized": 0,
@@ -14,22 +14,22 @@
   "model_name": "WATTNet",
   "input_size": 4,
   "covariate_size": 0,
-  "data_path": "data/21-15",
+  "data_path": "data/15-14",
   "lstm": {
-    "lr": 0.005,
-    "hidden_size": 24,
+    "lr": 0.001,
+    "hidden_size": 12,
     "num_layers": 2,
     "description": "hidden size:50"
   },
   "rnn": {
     "lr": 0.001,
-    "hidden_size": 24,
+    "hidden_size": 12,
     "num_layers": 2,
     "description": "hidden size:50"
   },
   "gru": {
-    "lr": 0.005,
-    "hidden_size": 24,
+    "lr": 0.001,
+    "hidden_size": 12,
     "num_layers": 2,
     "description": "hidden size:50"
   },

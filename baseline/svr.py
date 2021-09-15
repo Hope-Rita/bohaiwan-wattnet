@@ -24,8 +24,8 @@ def model_fit(x_train, y_train):
     return svm_reg
 
 filename = '/home/zoutao/lwt-prediction/data/data.csv'
-d = Data_utility(data_path=filename, train=0.7, valid=0.1, window=30, target=15)
-window = 30
+d = Data_utility(data_path=filename, train=0.7, valid=0.1, window=15, target=14)
+window = 15
 test = np.concatenate(d.test, axis=1)
 train = np.concatenate(d.train, axis=1)
 # print(test.shape)

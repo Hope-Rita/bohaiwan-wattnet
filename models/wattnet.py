@@ -30,7 +30,7 @@ class WATTNet(nn.Module):
         self.feat_dim = feat_dim
         self.dilations = [2 ** i for i in range(1, depth + 1)] * n_repeat
 
-        ltransf_dim = self.w_dim * (emb_dim+self.feat_dim)
+        ltransf_dim = self.w_dim * (emb_dim)
         self.attention_blocks = nn.ModuleList([AttentionBlock(in_channels=self.w_dim,
                                                               key_size=ltransf_dim,
                                                               value_size=ltransf_dim)
@@ -59,29 +59,29 @@ class WATTNet(nn.Module):
         # alternating TCN and attention modules) the single latent can be used directly
         # self.post_mlp = MLP(self.w_dim, in_dim, [32], out_softmax=False, drop_probability=dropout_prob)
         self.output_fc = nn.Linear(series_len - sum(self.dilations), out_dim)
+        # self.out = nn.Linear(1+self.feat_dim,1)
 
-    def forward(self, x_in):
+    def forward(self, x_in,feature):
         """
         Args:
             x_in: 'N, H, W' where `N` is the batch dimension, `C` the one-hot
                   embedding dimension, `H` is the temporal dimension, `W` is the
                   second dimension of the timeseries (e.g timeseries for different FX pairs)
-            x_in: B*T*(N+3)
+            x_in: B*T*N
+            feature: B*T1*F1
         Returns:
         """
         # x_in = self.pre_mlp(x_in)
-        feature = x_in[...,-3:]
-        x_in = x_in[...,:-3]
         B,T,N = x_in.shape
 
-        feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T*3->B*T*1*3->B*T*N*3
+        feature = feature.unsqueeze(2).repeat(1,1,N,1) # B*T1*3->B*T1*1*3->B*T1*N*3
         x_in = x_in.unsqueeze(3)  # `N, H, W` -> `N, C, H, W`
         # x_in = torch.cat([x_in,feature[...,-2:]],dim=-1)  # B*T*N*4
 
         if self.emb_dim > 1:
             x_in = self.emb_conv(x_in.reshape(-1,x_in.shape[-1]))
             x_in = x_in.reshape(B,T,N,-1)   # B*T*N*F
-            x_in = torch.cat([x_in, feature[..., -2:]], dim=-1)  # B*T*N*4
+            # x_in = torch.cat([x_in, feature[..., -2:]], dim=-1)  # B*T*N*4
 
         # swap `W` dim to channel dimension for grouped convolutions
         # `N, W, H, C`
@@ -107,26 +107,28 @@ class WATTNet(nn.Module):
             # `N, W, 1, C` -> `N, W, H, C`
             x_in = torch.cat(x_att_list, dim=2)
 
-        # `N, W, H, C` ->  `N, W, H, 1`
-        if self.emb_dim > 1:
-            # x_in = torch.cat([x_in,feature[...,-x_in.shape[2]:,1:]],dim=-1)
-            x_in = self.dec_conv(x_in)
-        # `N, W, H, 1` ->  `N, 1, H, W`
-        x_out = x_in.transpose(1, 3)
-        # `N, 1, H, W` ->  `N, H, W`
-        x_out = x_out[:, 0, :, :]
-
-        # x_out = self.post_mlp(x_out)  # N, H, sensor_num
-        x_out = self.output_fc(x_out.transpose(1, 2))
-        x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
-        # x_out = x_in
+        # # `N, W, H, C` ->  `N, W, H, 1`
         # if self.emb_dim > 1:
-        #     x_out = self.dec_conv(x_out.reshape(-1,self.emb_dim))
-        #     x_out = x_out.reshape(B,N,-1)
-        # x_out = self.output_fc(x_out.reshape(B*N,-1))
-        # x_out = x_out.reshape(B,N,-1).transpose(1,2)
+        #     # x_in = torch.cat([x_in,feature],dim=-1)
+        #     x_in = self.dec_conv(x_in)
+        # # `N, W, H, 1` ->  `N, 1, H, W`
+        # x_out = x_in.transpose(1, 3)
+        # # `N, 1, H, W` ->  `N, H, W`
+        # x_out = x_out[:, 0, :, :]
+        #
+        # # x_out = self.post_mlp(x_out)  # N, H, sensor_num
+        # x_out = self.output_fc(x_out.transpose(1, 2))
+        # x_out = x_out.transpose(1, 2)  # N, future_len, sensor_num
+        # x_feat = torch.cat([x_out.unsqueeze(3),feature[...,1:]],dim=-1)
+        # x_out = self.out(x_feat.reshape(-1,x_feat.shape[-1]))
+        # x_out = x_out.reshape(B,-1,N)
+        # B*N*T*F->B*N*F*T'->B*N*T'*F->B*T'*N*F
+        x_out = self.output_fc(x_in.transpose(2,3).reshape(-1,x_in.shape[-2]))
+        x_out = x_out.reshape(B,N,-1,x_out.shape[-1])
+        # B*T*N*F->B*T*N*1
+        x_out = self.dec_conv(torch.cat([x_out.transpose(2,3),feature[...,1:].transpose(1,2)],dim=-1))
 
-        return x_out
+        return x_out.transpose(1,2).squeeze(3)
 
     @property
     def name(self):

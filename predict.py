@@ -18,8 +18,8 @@ from utils import metric
 if __name__ == '__main__':
     pred_target_filename = conf.predict_target
     sensor_name = conf.get_config('data-parameters', 'valid-sensors')
-    x_train, y_train, x_val, y_val, x_test, y_test, normal_y = get_data(pred_target_filename, 'beihang')
-    pred = wattnet_predict(x_train, y_train, x_val, y_val, x_test)
+    x_train, y_train, x_val, y_val, x_test, y_test, normal_y,feature_train,feature_test,feature_val = get_data(pred_target_filename, 'beihang')
+    pred = wattnet_predict(x_train, y_train, x_val, y_val, x_test,feature_train, feature_test,feature_val)
     pred = data_process.reverse_section_normalization(pred, normal_y)
     y_test = data_process.reverse_section_normalization(y_test, normal_y)
 

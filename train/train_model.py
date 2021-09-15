@@ -98,7 +98,7 @@ def train_model(model: nn.Module, data_loader, loss_func: callable, optimizer, n
                                  optimizer_state_dict=copy.deepcopy(optimizer.state_dict()))
                 save_model(f'{model_folder}/best_model_21-15.pkl', **save_dict)
 
-        scheduler.step(running_loss['train'])
+        scheduler.step(running_loss['val'])
         writer.add_scalars('Loss', {
             f'{phase} loss': running_loss[phase] for phase in phases
         }, global_step=epoch)

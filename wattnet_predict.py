@@ -11,8 +11,8 @@ from utils.metric import RMSELoss
 from utils.background_loader import BackgroundLoader
 from utils.draw_pic import train_process_pic
 
-
-conf = Config()
+config_path = 'config.json'
+conf = Config(config_path)
 # 加载模型训练的相关配置
 num_workers, batch, epoch_num, learning_rate, save_model, load_model, use_visdom, visdom_env, save_name, show_attn \
     = conf.get_config('model-config',
@@ -43,7 +43,7 @@ pred_len, future_len, sensor_num = \
 para_save_path = conf.get_config('model-weights-loc', conf.run_location)
 
 
-def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
+def wattnet_predict(x_train, y_train, x_val, y_val, x_test, feature_train, feature_test, feature_val):
     model = WATTNet(series_len=pred_len,
                     in_dim=sensor_num,
                     out_dim=future_len,
@@ -52,8 +52,8 @@ def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
                     show_attn_alpha=show_attn
                     ).to(device)
     print(f'载入模型:{model.name}, depth: {depth}, n_repeat: {n_repeat}')
-    train_loader, val_loader, x_test = get_dataloader(x_train, y_train, x_val, y_val, x_test)
-
+    train_loader, val_loader, x_test, feature_test = get_dataloader(x_train, y_train, x_val, y_val, x_test, feature_train, feature_test, feature_val)
+    # save_name = 'X-15-14'
     path = os.path.join(para_save_path, f'{model.name}-{save_name}.pkl')
     if load_model:  # 加载模型
         model.load_state_dict(torch.load(path, map_location=conf.get_config('device', 'cuda')))
@@ -62,7 +62,7 @@ def wattnet_predict(x_train, y_train, x_val, y_val, x_test):
         model = train_model(model, train_loader, val_loader, draw_loss_pic=True)
 
     # 进行预测
-    pred = model(x_test)
+    pred = model(x_test,feature_test)
 
     if save_model:  # 保存模型
         torch.save(model.state_dict(), path)
@@ -89,9 +89,9 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
 
         # 训练阶段
         train_loss = 0.0
-        for i, (x, y) in enumerate(train_loader):
+        for i, (x, y, feature) in enumerate(train_loader):
             with torch.set_grad_enabled(True):
-                pred_y = model(x)
+                pred_y = model(x,feature)
                 loss = rmse(pred_y, y)
                 train_loss += loss.item() * len(x)
                 opt.zero_grad()
@@ -105,8 +105,8 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
         # 验证阶段
         val_loss = 0.0
         with torch.no_grad():
-            for i, (x, y) in enumerate(val_loader):
-                val_loss += rmse(model(x), y).item() * len(x)
+            for i, (x, y, feature) in enumerate(val_loader):
+                val_loss += rmse(model(x, feature), y).item() * len(x)
         val_loss /= len(val_loader.dataset)
         val_loss_record.append(val_loss)
 
@@ -126,17 +126,20 @@ def train_model(model, train_loader, val_loader, draw_loss_pic=False):
     return model
 
 
-def get_dataloader(x_train, y_train, x_val, y_val, x_test):
+def get_dataloader(x_train, y_train, x_val, y_val, x_test, feature_train, feature_test,feature_val):
     # 转换成 tensor
     x_train = torch.from_numpy(x_train).float().to(device)
     y_train = torch.from_numpy(y_train).float().to(device)
     x_val = torch.from_numpy(x_val).float().to(device)
     y_val = torch.from_numpy(y_val).float().to(device)
     x_test = torch.from_numpy(x_test).float().to(device)
+    feature_train = torch.from_numpy(feature_train).float().to(device)
+    feature_test = torch.from_numpy(feature_test).float().to(device)
+    feature_val = torch.from_numpy(feature_val).float().to(device)
 
     # 构建 DataSet 和 DataLoader
-    train_dataset = TensorDataset(x_train, y_train)
+    train_dataset = TensorDataset(x_train, y_train, feature_train)
     train_loader = BackgroundLoader(dataset=train_dataset, shuffle=True, batch_size=batch, num_workers=num_workers)
-    val_dataset = TensorDataset(x_val, y_val)
+    val_dataset = TensorDataset(x_val, y_val,feature_val)
     val_loader = BackgroundLoader(dataset=val_dataset, shuffle=True, batch_size=batch, num_workers=num_workers)
-    return train_loader, val_loader, x_test
+    return train_loader, val_loader, x_test, feature_test
